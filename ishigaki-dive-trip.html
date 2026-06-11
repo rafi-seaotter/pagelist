@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>石垣島潛旅功課|八重山下潛指南</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;800;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#E8F4F4;
+  --shallow:#BFE2E4;
+  --mid:#3D8CA0;
+  --deep:#11465E;
+  --abyss:#071F2B;
+  --coral:#FF6B5E;
+  --sand:#F2E8D5;
+  --ink:#0B2B3A;
+  --foam:rgba(255,255,255,.92);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,
+    var(--sky) 0%,
+    var(--shallow) 16%,
+    #7FBFC9 34%,
+    var(--mid) 52%,
+    var(--deep) 74%,
+    var(--abyss) 100%);
+  line-height:1.75;
+}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+/* depth rail */
+.rail{
+  position:fixed;left:14px;top:0;bottom:0;width:2px;
+  background:rgba(255,255,255,.25);z-index:50;
+}
+.rail span{
+  position:absolute;left:10px;transform:translateY(-50%);
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;
+  color:rgba(255,255,255,.85);background:rgba(7,31,43,.35);
+  padding:1px 6px;border-radius:3px;white-space:nowrap;
+}
+.rail i{position:absolute;left:-3px;width:8px;height:8px;border-radius:50%;background:var(--coral);transform:translateY(-50%)}
+@media(max-width:720px){.rail{display:none}}
+
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+section{padding:72px 0}
+
+/* depth chip */
+.depth{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;
+  padding:4px 12px;border-radius:99px;margin-bottom:18px;
+}
+.depth::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--coral)}
+.light .depth{background:rgba(11,43,58,.08);color:var(--ink)}
+.dark .depth{background:rgba(255,255,255,.12);color:#fff}
+
+h1,h2,h3{font-family:'Noto Serif TC',serif}
+h2{font-size:clamp(26px,4vw,34px);font-weight:800;margin-bottom:10px;letter-spacing:.02em}
+.light h2,.light h3,.light p{color:var(--ink)}
+.dark{color:rgba(255,255,255,.88)}
+.dark h2,.dark h3{color:#fff}
+.lede{font-size:16px;max-width:62ch;opacity:.85;margin-bottom:34px}
+
+/* hero */
+.hero{padding:96px 0 64px;position:relative;overflow:hidden}
+.hero .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.3em;color:var(--deep);margin-bottom:14px}
+.hero h1{
+  font-size:clamp(40px,8vw,76px);font-weight:900;line-height:1.15;
+  color:var(--ink);letter-spacing:.03em;
+}
+.hero h1 em{font-style:normal;color:var(--coral)}
+.hero .sub{margin-top:20px;font-size:17px;max-width:56ch;color:var(--ink);opacity:.8}
+.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.badge{
+  font-size:13px;font-weight:500;background:var(--foam);
+  border:1px solid rgba(11,43,58,.12);
+  padding:7px 14px;border-radius:99px;box-shadow:0 2px 8px rgba(11,43,58,.06);
+}
+.manta{
+  position:absolute;right:-30px;top:30px;width:min(300px,42vw);opacity:.16;
+  animation:glide 14s ease-in-out infinite alternate;
+}
+@keyframes glide{from{transform:translate(0,0) rotate(-4deg)}to{transform:translate(-36px,26px) rotate(3deg)}}
+
+/* cards */
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.card{
+  border-radius:16px;padding:22px 22px 20px;
+}
+.light .card{background:var(--foam);border:1px solid rgba(11,43,58,.1);box-shadow:0 4px 16px rgba(11,43,58,.06)}
+.dark .card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(4px)}
+.card h3{font-size:18px;font-weight:800;margin-bottom:8px;display:flex;align-items:baseline;gap:8px}
+.card p{font-size:14.5px;opacity:.88}
+.tag{
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+  padding:2px 8px;border-radius:4px;vertical-align:middle;font-weight:500;
+}
+.tag.sea{background:rgba(61,140,160,.18);color:#1E6377}
+.dark .tag.sea{background:rgba(191,226,228,.16);color:#BFE2E4}
+.tag.hot{background:rgba(255,107,94,.16);color:#D04A3E}
+.dark .tag.hot{background:rgba(255,107,94,.22);color:#FFB0A8}
+.meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;opacity:.65;display:block;margin-bottom:8px;letter-spacing:.05em}
+
+/* season table */
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--foam);border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(11,43,58,.06)}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid rgba(11,43,58,.08)}
+th{font-size:12.5px;letter-spacing:.08em;background:rgba(11,43,58,.05);font-weight:700}
+tr:last-child td{border-bottom:none}
+td b{color:#C2433A}
+
+/* map */
+.mapbox{
+  background:linear-gradient(180deg,#0E3D52,#0A2E40);
+  border-radius:20px;padding:16px 10px 6px;border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 10px 36px rgba(4,18,26,.4);
+}
+.mapbox svg{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:14px;padding:12px 12px 14px;font-size:12.5px;color:rgba(255,255,255,.85)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+
+/* callout */
+.callout{
+  border-radius:16px;padding:20px 22px;margin-top:26px;
+  background:rgba(255,107,94,.13);border:1px solid rgba(255,107,94,.45);
+  font-size:14.5px;
+}
+.callout b{color:#FF8A7E}
+.light .callout b{color:#C2433A}
+.callout .t{font-family:'Noto Serif TC',serif;font-weight:800;font-size:15.5px;display:block;margin-bottom:6px}
+
+footer{padding:48px 0 72px;color:rgba(255,255,255,.55);font-size:13px}
+footer .todo{
+  border:1px dashed rgba(255,255,255,.3);border-radius:14px;padding:18px 20px;margin-bottom:24px;
+  color:rgba(255,255,255,.7)
+}
+ul.clean{list-style:none}
+ul.clean li{padding-left:18px;position:relative;margin-bottom:6px;font-size:14.5px}
+ul.clean li::before{content:"·";position:absolute;left:4px;color:var(--coral);font-weight:900}
+</style>
+</head>
+<body>
+
+<div class="rail" aria-hidden="true">
+  <span style="top:6%">海面 0m</span><i style="top:6%"></i>
+  <span style="top:26%">−5m 概述</span><i style="top:26%"></i>
+  <span style="top:44%">−10m 地圖</span><i style="top:44%"></i>
+  <span style="top:58%">−15m 離島</span><i style="top:58%"></i>
+  <span style="top:72%">−20m 陸遊・浮潛</span><i style="top:72%"></i>
+  <span style="top:88%">−30m 潛點</span><i style="top:88%"></i>
+</div>
+
+<!-- ░░ 海面 0m ░░ -->
+<header class="hero light">
+  <svg class="manta" viewBox="0 0 200 120" aria-hidden="true">
+    <path d="M100 30 C70 5 25 15 5 55 C40 50 65 58 82 75 C88 82 94 95 100 112 C106 95 112 82 118 75 C135 58 160 50 195 55 C175 15 130 5 100 30 Z" fill="#0B2B3A"/>
+    <path d="M100 108 C99 116 97 119 95 120 C98 119 100 117 100 117 C100 117 102 119 105 120 C103 119 101 116 100 108Z" fill="#0B2B3A"/>
+  </svg>
+  <div class="wrap">
+    <div class="eyebrow">YAEYAMA ISLANDS — ISHIGAKI DIVE TRIP</div>
+    <h1>石垣島<br>潛旅功課<em>。</em></h1>
+    <p class="sub">三人 AOW 小隊的八重山群島下潛指南。這一頁從海面開始,越往下捲,潛得越深——陸地的事在淺處,Manta 在最深的地方等你。</p>
+    <div class="badges">
+      <span class="badge">🛫 桃園直飛約 1 小時</span>
+      <span class="badge">🛳 基隆渡輪 7–10 小時(2026/5/28 首航)</span>
+      <span class="badge">🤿 日本潛水雜誌讀者票選 No.1 連霸</span>
+      <span class="badge">📋 建議 5–6 天</span>
+    </div>
+  </div>
+</header>
+
+<!-- ░░ −5m 概述 ░░ -->
+<section class="light" id="overview">
+  <div class="wrap">
+    <span class="depth">水深 −5M / 島嶼概述</span>
+    <h2>先認識這座島</h2>
+    <p class="lede">石垣島是八重山群島的門戶,人口約五萬,卻擁有日本數一數二的海洋生態。文化上是「琉球中的琉球」——比沖繩本島更慢、更野、更靠近台灣(直線距離只有約 270 公里,比到東京近得多)。</p>
+
+    <h3 style="font-size:17px;margin-bottom:12px">季節怎麼挑</h3>
+    <table>
+      <thead><tr><th>月份</th><th>水溫</th><th>潛水視角</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">4–6月</td><td class="mono">25–28°C</td><td>梅雨偶有,人少價低,海況穩定的甜蜜點</td></tr>
+        <tr><td class="mono">7–10月</td><td class="mono">28–30°C</td><td><b>Manta 遇見率最高的黃金期</b>,但 7–9 月要賭颱風</td></tr>
+        <tr><td class="mono">11月</td><td class="mono">25–26°C</td><td>觀光退潮、水還溫,CP 值高的收尾月</td></tr>
+        <tr><td class="mono">12–3月</td><td class="mono">22–23°C</td><td>要 5mm 防寒衣,北風常吹掉北邊潛點;但與那國錘頭鯊是冬季限定</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:17px;margin:34px 0 12px">必吃名單</h3>
+    <div class="grid g3">
+      <div class="card"><h3>石垣牛</h3><p>許多日本名牌和牛(含神戶牛)的種牛來源地。燒肉、握壽司、漢堡排都值得,潛完水的蛋白質補給沒有比這更奢侈的。</p></div>
+      <div class="card"><h3>八重山麵</h3><p>細圓麵+豬骨柴魚清湯+滷三層肉,介於拉麵與烏龍之間的島民日常,一碗大約 ¥700,潛水日早餐首選。</p></div>
+      <div class="card"><h3>島蔬菜與苦瓜</h3><p>苦瓜炒蛋(ゴーヤーチャンプルー)是沖繩之魂;搭配海葡萄、紅芋、泡盛,居酒屋一輪點好點滿。</p></div>
+    </div>
+
+    <h3 style="font-size:17px;margin:34px 0 12px">風土民情三件事</h3>
+    <ul class="clean">
+      <li><b>島時間(島時間/しまじかん)</b>:店家開門看心情、公車班次是參考值。行程留白,別用台北節奏壓它。</li>
+      <li><b>三線與民謠</b>:晚上市區的民謠居酒屋會有現場三線演奏,八重山民謠是日本民謠的源頭之一,值得排一晚。</li>
+      <li><b>星空保護區</b>:西表石垣國立公園是日本第一個國際暗空保護區,新月前後的夜晚抬頭就是銀河——潛水員的水面休息獎勵。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ░░ −10m 地圖 ░░ -->
+<section class="dark" id="map">
+  <div class="wrap">
+    <span class="depth">水深 −10M / 全域地圖</span>
+    <h2>一張圖看懂八重山</h2>
+    <p class="lede">所有離島渡輪從石垣港離島碼頭出發,所有潛船從市區或川平出海——住宿訂在市區碼頭一帶,跳島與潛水兩邊通吃。</p>
+
+    <div class="mapbox">
+      <svg viewBox="0 0 1000 760" role="img" aria-label="八重山群島示意地圖,標示石垣島、離島、陸遊景點與潛點位置">
+        <!-- reef glow -->
+        <ellipse cx="640" cy="300" rx="330" ry="260" fill="rgba(127,191,201,.06)"/>
+        <ellipse cx="190" cy="390" rx="230" ry="170" fill="rgba(127,191,201,.05)"/>
+
+        <!-- Iriomote -->
+        <path d="M40 360 C60 290 130 250 210 255 C290 260 330 310 322 380 C314 450 250 492 170 488 C95 484 25 430 40 360 Z" fill="#1E5A4A" stroke="rgba(255,255,255,.25)" stroke-width="2"/>
+        <text x="178" y="392" text-anchor="middle" font-size="26" font-family="'Noto Serif TC',serif" font-weight="800" fill="#DFF0E8">西表島</text>
+        <text x="178" y="416" text-anchor="middle" font-size="13" fill="rgba(255,255,255,.65)">船程 35–45 分・世界自然遺產</text>
+
+        <!-- Kohama -->
+        <ellipse cx="408" cy="356" rx="34" ry="24" fill="#2E7E5E" stroke="rgba(255,255,255,.25)" stroke-width="2"/>
+        <text x="408" y="322" text-anchor="middle" font-size="16" font-family="'Noto Serif TC',serif" font-weight="800" fill="#fff">小濱島</text>
+
+        <!-- Taketomi -->
+        <ellipse cx="577" cy="402" rx="26" ry="20" fill="#C98A4B" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+        <text x="577" y="446" text-anchor="middle" font-size="16" font-family="'Noto Serif TC',serif" font-weight="800" fill="#fff">竹富島</text>
+
+        <!-- Kuroshima -->
+        <ellipse cx="470" cy="492" rx="24" ry="19" fill="#2E7E5E" stroke="rgba(255,255,255,.22)" stroke-width="1.5"/>
+        <text x="470" y="532" text-anchor="middle" font-size="14" fill="rgba(255,255,255,.8)">黑島</text>
+
+        <!-- Hateruma -->
+        <ellipse cx="110" cy="688" rx="38" ry="17" fill="#2E7E5E" stroke="rgba(255,255,255,.25)" stroke-width="2"/>
+        <text x="110" y="660" text-anchor="middle" font-size="15" font-family="'Noto Serif TC',serif" font-weight="800" fill="#fff">波照間島</text>
+        <text x="110" y="724" text-anchor="middle" font-size="12" fill="rgba(255,255,255,.6)">船程 60–80 分・日本最南端</text>
+
+        <!-- Ishigaki -->
+        <path d="M656 420 C610 415 560 380 545 345 C530 308 565 260 620 232 C660 212 700 200 745 202 C790 204 838 175 875 122 C900 86 925 50 940 36 C952 48 938 90 916 130 C885 188 852 230 832 268 C812 308 805 350 780 382 C748 422 700 426 656 420 Z" fill="#1F6E58" stroke="rgba(255,255,255,.35)" stroke-width="2.5"/>
+        <text x="690" y="318" text-anchor="middle" font-size="30" font-family="'Noto Serif TC',serif" font-weight="900" fill="#EAF6EF">石垣島</text>
+
+        <!-- ferry routes -->
+        <g stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-dasharray="3 6" fill="none">
+          <path d="M668 412 C640 418 605 412 595 406"/>
+          <path d="M660 418 C580 450 470 420 440 372"/>
+          <path d="M655 422 C520 470 350 450 300 420"/>
+          <path d="M650 428 C460 540 230 640 148 682"/>
+        </g>
+
+        <!-- ====== markers ====== -->
+        <!-- port -->
+        <g>
+          <circle cx="676" cy="408" r="9" fill="#fff" stroke="#0B2B3A" stroke-width="3"/>
+          <text x="694" y="402" font-size="14" font-weight="700" fill="#fff">⛴ 離島碼頭(住這附近)</text>
+        </g>
+
+        <!-- land spots (sand) -->
+        <g fill="#F2E8D5">
+          <circle cx="630" cy="240" r="8" stroke="#0B2B3A" stroke-width="2"/>
+          <circle cx="940" cy="44" r="8" stroke="#0B2B3A" stroke-width="2"/>
+          <circle cx="846" cy="170" r="8" stroke="#0B2B3A" stroke-width="2"/>
+        </g>
+        <text x="600" y="222" font-size="13.5" fill="#F2E8D5" text-anchor="end" font-weight="500">川平灣(玻璃船)</text>
+        <text x="924" y="30" font-size="13.5" fill="#F2E8D5" text-anchor="end" font-weight="500">平久保崎燈塔</text>
+        <text x="864" y="166" font-size="13.5" fill="#F2E8D5" font-weight="500">玉取崎展望台</text>
+
+        <!-- snorkel (light blue) -->
+        <g fill="#9CD8E8">
+          <circle cx="722" cy="226" r="8" stroke="#0B2B3A" stroke-width="2"/>
+          <circle cx="560" cy="330" r="8" stroke="#0B2B3A" stroke-width="2"/>
+        </g>
+        <text x="738" y="222" font-size="13.5" fill="#BFE7F2" font-weight="500">米原海灘+青之洞窟(浮潛)</text>
+        <text x="544" y="318" font-size="13.5" fill="#BFE7F2" text-anchor="end" font-weight="500">名藏灣(浮潛/平靜灣)</text>
+
+        <!-- dive sites (coral) -->
+        <g fill="#FF6B5E">
+          <circle cx="616" cy="196" r="10" stroke="#fff" stroke-width="2.5"/>
+          <circle cx="528" cy="298" r="10" stroke="#fff" stroke-width="2.5"/>
+          <circle cx="340" cy="362" r="10" stroke="#fff" stroke-width="2.5"/>
+          <circle cx="588" cy="368" r="10" stroke="#fff" stroke-width="2.5"/>
+        </g>
+        <text x="600" y="178" font-size="15" fill="#FFB7AE" text-anchor="end" font-weight="700">★ Manta Scramble / City</text>
+        <text x="510" y="286" font-size="14" fill="#FFB7AE" text-anchor="end" font-weight="700">★ 大崎一帶</text>
+        <text x="340" y="340" font-size="14" fill="#FFB7AE" text-anchor="middle" font-weight="700">★ Yonara 水道</text>
+        <text x="606" y="376" font-size="14" fill="#FFB7AE" font-weight="700">★ 竹富南</text>
+
+        <!-- compass + scale -->
+        <g transform="translate(945,560)" fill="rgba(255,255,255,.7)">
+          <circle r="20" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
+          <path d="M0 -14 L5 6 L0 2 L-5 6 Z" fill="#FF6B5E"/>
+          <text y="-28" text-anchor="middle" font-size="12">N</text>
+        </g>
+        <text x="40" y="50" font-size="12" fill="rgba(255,255,255,.5)" class="mono">※ 示意圖,非等比例</text>
+      </svg>
+      <div class="legend">
+        <span><span class="dot" style="background:#FF6B5E"></span>潛點(船潛)</span>
+        <span><span class="dot" style="background:#9CD8E8"></span>浮潛/岸潛</span>
+        <span><span class="dot" style="background:#F2E8D5"></span>陸遊景點</span>
+        <span><span class="dot" style="background:#fff"></span>離島碼頭</span>
+        <span style="opacity:.7">┄ 渡輪航線</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ −15m 離島 ░░ -->
+<section class="dark" id="islands">
+  <div class="wrap">
+    <span class="depth">水深 −15M / 跳島</span>
+    <h2>離島怎麼選</h2>
+    <p class="lede">全部從石垣港離島碼頭搭高速船,班次密、當天來回。熱門航線通常現場買票即可(波照間例外,海況差常停航,要預約+留彈性)。</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3>竹富島 <span class="tag hot">必去</span></h3>
+        <span class="meta">船程 10–15 分・來回約 ¥1,520・半天剛好</span>
+        <p>琉球傳統聚落的活標本:紅瓦古宅、白沙街道、水牛車緩緩晃過三角梅花牆。租腳踏車繞一圈,西棧橋看海、Kondoi 海灘踩水。建議跟抵達日合併,放完行李直接跳船。</p>
+      </div>
+      <div class="card">
+        <h3>西表島 <span class="tag hot">一整天</span></h3>
+        <span class="meta">船程 35–45 分・需預約 tour</span>
+        <p>世界自然遺產,九成面積是叢林。獨木舟溯紅樹林、Pinaisara 瀑布健行、運氣好見西表山貓(全球僅存約百隻)。島上交通不便,訂「石垣出發含船票」的一日 tour 最省事。</p>
+      </div>
+      <div class="card">
+        <h3>小濱島 <span class="tag sea">放空型</span></h3>
+        <span class="meta">船程 25–30 分・半天</span>
+        <p>甘蔗田裡的 Sugar Road、大岳展望台 360 度環視八重山。租電動腳踏車環島約 3 小時,適合行程裡需要一段「什麼都不幹」的下午。時間不夠可割愛。</p>
+      </div>
+      <div class="card">
+        <h3>波照間島 <span class="tag sea">賭運氣</span></h3>
+        <span class="meta">船程 60–80 分・海況差常停航</span>
+        <p>日本最南端有人島。北濱(ニシ浜)的海色被稱為「波照間藍」,是傳說級的存在。想去就排在行程前段、留備案——回程停航被困島上一晚的故事不算罕見。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ −20m 陸遊 ░░ -->
+<section class="dark" id="land">
+  <div class="wrap">
+    <span class="depth">水深 −20M / 陸遊・浮潛日</span>
+    <h2>不潛水那天的石垣</h2>
+    <p class="lede">環島一圈約 130–140 公里,純開車 3–4 小時,加停留點排一個整天。這天放在「最後一潛之後、搭機之前」,完美消化禁飛 18–24 小時。租車備妥台灣駕照+日文譯本即可。</p>
+
+    <h3 style="font-size:17px;margin-bottom:12px">陸上景點</h3>
+    <div class="grid g3">
+      <div class="card"><h3>川平灣</h3><span class="meta">米其林綠色指南三星</span><p>石垣的代表畫面。禁止游泳,但可搭玻璃底船看珊瑚。光線會讓海水變出七種藍,上午順光最美。</p></div>
+      <div class="card"><h3>平久保崎燈塔</h3><span class="meta">島嶼最北端</span><p>白燈塔+海天一色,環島自駕的折返點。停車格少,順路一訪別硬等。</p></div>
+      <div class="card"><h3>玉取崎展望台</h3><span class="meta">東岸絕景</span><p>俯瞰平久保半島與太平洋珊瑚礁群,從市區往北的必停點,免費。</p></div>
+      <div class="card"><h3>石垣島鐘乳洞</h3><span class="meta">雨天備案王</span><p>20 萬年地質作用形成的 3.2 公里鐘乳石洞(開放約 660m),龍貓鐘乳石是人氣拍點。</p></div>
+      <div class="card"><h3>市區+公設市場</h3><span class="meta">730 交差點周邊</span><p>歐里翁啤酒、島胡椒、鹽製品的伴手禮聚落;晚上民謠居酒屋聽三線。</p></div>
+      <div class="card"><h3>Banna 公園展望台</h3><span class="meta">市區後山</span><p>從高處看市街與離島全景,黃昏順遊,免門票。</p></div>
+    </div>
+
+    <h3 style="font-size:17px;margin:34px 0 12px">海灘+浮潛/自潛點(岸邊進出)</h3>
+    <div class="grid g3">
+      <div class="card"><h3>米原海灘 <span class="tag sea">浮潛首選</span></h3><p>岸邊就是珊瑚與熱帶魚,水淺、生態密度高,海龜偶遇率不低。注意離岸流告示,穿膠鞋(底部多礁石)。</p></div>
+      <div class="card"><h3>青之洞窟 <span class="tag sea">浮潛/自潛</span></h3><p>米原附近的海蝕洞,光線射入時整個洞穴透藍。可報浮潛 tour,也是自潛練習的好場域(結伴+浮球必備)。</p></div>
+      <div class="card"><h3>名藏灣 <span class="tag sea">平靜水域</span></h3><p>西岸的大內灣,風浪小、適合 SUP+浮潛組合;紅樹林河口生態跟外礁是兩種風景。</p></div>
+      <div class="card"><h3>底地海灘</h3><span class="meta">川平旁</span><p>淺長沙灘+夕陽名所,游泳放鬆型,浮潛生態普通。</p></div>
+      <div class="card"><h3>Sunset Beach</h3><span class="meta">島北部</span><p>名字即賣點,水質清、人少,北部自駕的收尾站。</p></div>
+      <div class="card"><h3>真榮里海灘</h3><span class="meta">市區旁</span><p>離市區最近的玩水點,適合抵達日或零碎時間踩個水。</p></div>
+    </div>
+
+    <div class="callout">
+      <span class="t">⚠️ 自潛者注意</span>
+      Manta 清潔站禁止垂直下潛(會驚擾清潔行為,當地潛店規範),自潛舞台請留在青之洞窟與珊瑚礁區。所有岸潛/自潛:結伴、帶浮球旗、查潮汐與離岸流,旺季外不少海灘無救生員。
+    </div>
+  </div>
+</section>
+
+<!-- ░░ −30m 潛點 ░░ -->
+<section class="dark" id="dive">
+  <div class="wrap">
+    <span class="depth">水深 −30M / 船潛主菜</span>
+    <h2>潛點介紹</h2>
+    <p class="lede">石垣連續 17 年蟬聯日本潛水雜誌讀者票選最佳潛區第一名。潛點重心在島的西北角與西岸,AOW 全開,訂 fun dive 時報證照等級+log 數即可。</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Manta Scramble / Manta City <span class="tag hot">招牌</span></h3>
+        <span class="meta">川平石崎外海・深度 5–15m・夏秋遇見率最高</span>
+        <p>全日本最有名的鬼蝠魟清潔站。玩法是跪在礁沙上等,Manta 在頭頂盤旋繞圈,一待可達十幾分鐘。規矩:不追、不摸、不從上方下壓,聽潛導手勢。</p>
+      </div>
+      <div class="card">
+        <h3>米原 W 礁+青之洞窟 <span class="tag sea">珊瑚花園</span></h3>
+        <span class="meta">北岸・深度 5–18m・難度親民</span>
+        <p>桌形珊瑚與枝狀珊瑚的密集區,小丑魚、龍占、玻璃魚風暴。洞穴段光束如教堂,水下攝影的快樂場。</p>
+      </div>
+      <div class="card">
+        <h3>大崎一帶 <span class="tag sea">避風主力</span></h3>
+        <span class="meta">西岸・深度 10–25m・冬季/北風天首選</span>
+        <p>礁坡地形,海龜、花鱸群、龍蝦穴,偶有隆頭鸚哥群過境。離市區船程近,東北風吹掉北邊潛點時的可靠備案。</p>
+      </div>
+      <div class="card">
+        <h3>Yonara 水道 <span class="tag hot">遠征</span></h3>
+        <span class="meta">小濱—西表之間・放流潛・需報遠征船</span>
+        <p>人稱「Manta 之路」的水道放流,水流帶著你飄過白沙水道等 Manta 列隊。AOW 的放流經驗在這裡用上,海況允許才開團。</p>
+      </div>
+      <div class="card">
+        <h3>竹富南/Panari 方向 <span class="tag sea">跳島順潛</span></h3>
+        <span class="meta">石垣出船・深度 5–20m</span>
+        <p>竹富島周邊本身就是潛區——白沙地+花園鰻聚落+幻之島(浜島)沙洲周邊。上島觀光歸渡輪,潛這片海歸石垣潛店的船,一魚兩吃。</p>
+      </div>
+      <div class="card">
+        <h3>與那國島 <span class="tag hot">冬季限定彩蛋</span></h3>
+        <span class="meta">石垣以西・遠征約 ¥30,000・12–3 月</span>
+        <p>錘頭鯊群+謎之海底遺跡(切割平整的巨石階)。冬天成行的話,這趟的稀有度直接超車 Manta。進階放流,適合你們的 AOW 配置。</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="t">🛫 鐵律:最後一潛 → 登機,間隔 18–24 小時</span>
+      搭<b>飛機</b>回程:潛水日全部往前塞,最後一整天淨空給環島陸遊+石垣牛。搭<b>船</b>回程:不受禁飛限制,最後一天照潛無妨。行程順序由回程交通決定,先訂回程再排潛水日。
+    </div>
+  </div>
+</section>
+
+<footer class="dark">
+  <div class="wrap">
+    <div class="todo">
+      <b>📌 待補區(整理好再加):</b> 潛店比較與預約資訊・每日行程表・住宿清單・預算總表・渡輪船班確認
+    </div>
+    <p>八重山潛旅功課 · 資料整理於 2026 年 6 月 · 船班/價格出發前請再次確認官方資訊</p>
+  </div>
+</footer>
+
+</body>
+</html>
