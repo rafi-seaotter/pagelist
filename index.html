@@ -3,683 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>電商架站工具比較：8 種工具，哪個最適合你？</title>
+<title>Rafi's Pages</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
   :root {
     --ink: #1a1a2e;
-    --ink-light: #3d3d5c;
     --paper: #faf9f6;
     --cream: #f0ede6;
     --accent: #c94040;
-    --accent-warm: #e07b39;
-    --accent-green: #2d7a5f;
-    --gold: #b8860b;
     --border: #d4cfc6;
-    --card-bg: #ffffff;
+    --ink-light: #3d3d5c;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--paper); color: var(--ink); line-height: 1.8; }
+  body { font-family: 'Noto Sans TC', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
 
-  header { background: var(--ink); color: #fff; padding: 72px 40px 56px; position: relative; overflow: hidden; }
-  header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(201,64,64,0.25) 0%, transparent 70%); }
-  header::after { content: ''; position: absolute; bottom: -40px; left: 20%; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(224,123,57,0.15) 0%, transparent 70%); }
-  .header-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+  header {
+    background: var(--ink);
+    padding: 64px 40px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,64,64,0.2) 0%, transparent 70%);
+  }
+  .header-inner { max-width: 760px; margin: 0 auto; position: relative; z-index: 1; }
   .header-tag { display: inline-block; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; padding: 4px 12px; margin-bottom: 20px; }
-  header h1 { font-family: 'Noto Serif TC', serif; font-size: clamp(28px, 5vw, 48px); font-weight: 900; line-height: 1.3; margin-bottom: 16px; }
-  header h1 em { color: var(--accent); font-style: normal; border-bottom: 3px solid var(--accent); }
-  header p.subtitle { color: rgba(255,255,255,0.7); font-size: 15px; max-width: 600px; }
-  .header-meta { margin-top: 24px; display: flex; gap: 24px; font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; flex-wrap: wrap; }
+  header h1 { font-family: 'Noto Serif TC', serif; font-size: clamp(28px, 5vw, 44px); font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 12px; }
+  header p { color: rgba(255,255,255,0.55); font-size: 14px; }
 
-  .intro-section { padding: 56px 24px 48px; max-width: 900px; margin: 0 auto; border-bottom: 1px solid var(--border); }
-  .intro-section p { font-size: 16px; color: var(--ink-light); margin-bottom: 16px; max-width: 760px; }
-  .toc-box { background: var(--cream); border-left: 4px solid var(--accent); padding: 20px 24px; margin-top: 32px; border-radius: 0 4px 4px 0; }
-  .toc-box h3 { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-  .toc-box ol { padding-left: 20px; font-size: 14px; color: var(--ink-light); line-height: 2; }
+  main { max-width: 760px; margin: 0 auto; padding: 56px 24px; width: 100%; flex: 1; }
 
-  .section { padding: 56px 24px; max-width: 900px; margin: 0 auto; border-bottom: 1px solid var(--border); }
-  .section-number { font-size: 80px; font-family: 'Noto Serif TC', serif; font-weight: 900; color: var(--cream); line-height: 1; margin-bottom: -24px; }
-  .section h2 { font-family: 'Noto Serif TC', serif; font-size: clamp(22px, 3.5vw, 32px); font-weight: 700; color: var(--ink); margin-bottom: 8px; }
-  .section-desc { font-size: 14px; color: var(--ink-light); margin-bottom: 32px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #aaa; margin-bottom: 20px; }
 
-  .platform-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 28px 28px 24px; margin-bottom: 24px; transition: box-shadow 0.2s; }
-  .platform-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
-  .platform-card.featured { border: 2px solid #3949ab; }
-  .platform-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
-  .platform-name { font-family: 'Noto Serif TC', serif; font-size: 22px; font-weight: 700; }
-  .platform-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; }
-  .tag-new { background: #fde8e8; color: var(--accent); }
-  .tag-popular { background: #fff3e0; color: #c97a00; }
-  .tag-pro { background: #e8f5e9; color: #2d7a5f; }
-  .tag-enterprise { background: #e8eaf6; color: #3949ab; }
-  .tag-budget { background: #f3e5f5; color: #7b1fa2; }
-  .tag-growing { background: #e0f7fa; color: #00695c; }
-  .tag-omni { background: #fff8e1; color: #f57f17; }
+  .card-list { display: flex; flex-direction: column; gap: 16px; }
 
-  .platform-card p.desc { font-size: 14px; color: var(--ink-light); margin-bottom: 20px; line-height: 1.7; }
-  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
-  .info-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #999; margin-bottom: 4px; }
-  .info-value { font-size: 14px; font-weight: 500; color: var(--ink); }
-  .info-value.highlight { color: var(--accent); font-weight: 700; }
-  .info-value.green { color: var(--accent-green); font-weight: 700; }
-  .info-value.warn { color: var(--accent); }
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 28px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+  .card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.09); transform: translateY(-1px); }
+  .card-left { display: flex; align-items: flex-start; gap: 16px; }
+  .card-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+  .card-title { font-family: 'Noto Serif TC', serif; font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 4px; line-height: 1.4; }
+  .card-desc { font-size: 13px; color: var(--ink-light); line-height: 1.6; }
+  .card-arrow { font-size: 18px; color: var(--accent); flex-shrink: 0; opacity: 0.6; transition: opacity 0.15s, transform 0.15s; }
+  .card:hover .card-arrow { opacity: 1; transform: translateX(3px); }
 
-  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
-  @media(max-width: 560px) { .pros-cons { grid-template-columns: 1fr; } }
-  .pros, .cons { background: var(--cream); border-radius: 4px; padding: 14px 16px; }
-  .pros { border-top: 3px solid var(--accent-green); }
-  .cons { border-top: 3px solid var(--accent); }
-  .pros-cons h4 { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
-  .pros h4 { color: var(--accent-green); }
-  .cons h4 { color: var(--accent); }
-  .pros-cons ul { list-style: none; font-size: 13px; color: var(--ink-light); line-height: 1.9; }
-  .pros ul li::before { content: '✓  '; color: var(--accent-green); font-weight: 700; }
-  .cons ul li::before { content: '✗  '; color: var(--accent); font-weight: 700; }
-  .best-for { margin-top: 16px; background: var(--ink); color: #fff; border-radius: 4px; padding: 12px 16px; font-size: 13px; }
-  .best-for strong { color: #f0c070; margin-right: 8px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
-
-  .cost-table-wrapper { overflow-x: auto; margin: 24px 0; border-radius: 8px; border: 1px solid var(--border); }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; min-width: 700px; }
-  thead th { background: var(--ink); color: #fff; padding: 14px 16px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-  thead th:first-child { width: 110px; }
-  tbody tr:nth-child(even) { background: var(--cream); }
-  tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--ink-light); }
-  tbody td:first-child { font-weight: 700; color: var(--ink); font-size: 14px; }
-  td.winner { color: var(--accent-green); font-weight: 700; }
-  td.warn { color: var(--accent); }
-  .note-source { font-size: 11px; color: #999; margin-top: 8px; font-style: italic; }
-
-  .decision-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 16px; display: flex; gap: 20px; align-items: flex-start; }
-  .decision-icon { font-size: 32px; flex-shrink: 0; width: 48px; text-align: center; margin-top: 2px; }
-  .decision-content h3 { font-family: 'Noto Serif TC', serif; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-  .decision-content p { font-size: 13px; color: var(--ink-light); line-height: 1.7; }
-  .decision-content .rec { display: inline-block; margin-top: 8px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 2px; }
-
-  /* Customer service section */
-  .cs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-  .cs-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
-  .cs-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-  .cs-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .stars { font-size: 14px; letter-spacing: 1px; color: #f0a500; }
-  .cs-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 2px; }
-  .cs-badge.pos { background: #e8f5e9; color: #2d7a5f; }
-  .cs-badge.mid { background: #fff8e1; color: #f57f17; }
-  .cs-badge.neg { background: #fde8e8; color: var(--accent); }
-  .cs-desc { font-size: 13px; color: var(--ink-light); line-height: 1.7; margin-bottom: 8px; }
-  .cs-source { font-size: 11px; color: #aaa; font-style: italic; }
-
-  .disclaimer { background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; font-size: 12px; color: #888; margin: 40px 24px; line-height: 1.7; max-width: 900px; }
-  .disclaimer strong { color: var(--ink-light); }
-  footer { background: var(--ink); color: rgba(255,255,255,0.4); text-align: center; padding: 32px; font-size: 12px; }
+  footer {
+    text-align: center;
+    padding: 32px;
+    font-size: 12px;
+    color: #bbb;
+    border-top: 1px solid var(--border);
+  }
 </style>
 </head>
 <body>
 
 <header>
   <div class="header-inner">
-    <div class="header-tag">電商架站工具完整比較</div>
-    <h1>市面上 <em>8 種</em>架站工具<br>哪個最適合你？</h1>
-    <p class="subtitle">Pinzap、SHOPLINE、meepShop、EasyStore、QDM、WACA、Cyberbiz、BVshop——從費用結構、建站速度到 OMO 整合，一篇搞定選擇困難</p>
-    <div class="header-meta">
-      <span>📅 資料更新：2026 年 4 月</span>
-      <span>📊 涵蓋 8 個平台</span>
-      <span>⚡ 含每月費用試算 + 客服評論</span>
-    </div>
+    <div class="header-tag">Rafi's Pages</div>
+    <h1>歡迎</h1>
+    <p>這裡收錄了各種整理中的頁面</p>
   </div>
 </header>
 
-<div class="intro-section">
-  <p>台灣電商架站市場百花齊放，從輕量小資品牌到中大型 OMO 企業，需求天差地遠。選平台不只是比月費數字，還要看<strong>交易抽成、建站速度、金物流彈性、AI 自動化深度</strong>——加總起來才是真實的營運成本。</p>
-  <p>這篇文章結合官方資訊、第三方評測與圖表數據，系統性整理 8 大主流架站工具，讓你一次看清楚優劣，不被行銷話術牽著走。</p>
-  <div class="toc-box">
-    <h3>本文架構</h3>
-    <ol>
-      <li>各平台深度介紹（8 家）</li>
-      <li>費用完整比較表（假設月營收 $100k）</li>
-      <li>核心功能對照表</li>
-      <li>客服體驗評論概述</li>
-      <li>決策指南：你的情境，選哪個？</li>
-    </ol>
-  </div>
-</div>
+<main>
+  <p class="section-label">頁面列表</p>
+  <div class="card-list">
 
-<!-- SECTION 1 -->
-<div class="section">
-  <div class="section-number">01</div>
-  <h2>各平台深度介紹</h2>
-  <p class="section-desc">從定位、費用到實際使用優缺點，逐一拆解</p>
-
-  <!-- PINZAP -->
-  <div class="platform-card">
-    <div class="platform-card-header">
-      <div class="platform-name">🟣 Pinzap</div>
-      <span class="platform-tag tag-new">新銳挑戰者</span>
-    </div>
-    <p class="desc">Pinkoi 旗下推出的電商官網工具，背靠 Pinkoi 10+ 年的電商數據與金流系統。主打<strong>彈性編輯器 + 內建自動化 + 費用透明</strong>，金流手續費已內含於交易服務費中，不另收金流費。最低月付 NT$600 即可開店，入門門檻極低。</p>
-    <div class="info-grid">
-      <div class="info-item"><div class="info-label">方案費用</div><div class="info-value green">月訂閱最低 NT$600 起</div></div>
-      <div class="info-item"><div class="info-label">平台交易費</div><div class="info-value green">4%（金物流費用已含在內，不另收）</div></div>
-      <div class="info-item"><div class="info-label">建站速度</div><div class="info-value">★★★★★ 3–5 天</div></div>
-      <div class="info-item"><div class="info-label">金物流</div><div class="info-value green">✅ 註冊即可用（7-11/全家/信用卡）</div></div>
-      <div class="info-item"><div class="info-label">免費試用</div><div class="info-value">14 天（可切換方案試用）</div></div>
-      <div class="info-item"><div class="info-label">月成本試算（$100k 營收）</div><div class="info-value highlight">約 NT$4,600</div></div>
-    </div>
-    <div class="pros-cons">
-      <div class="pros"><h4>優勢</h4><ul>
-        <li>最低月費 $600，入門無壓力</li>
-        <li>通過身份認證即串接金物流服務（超商、信用卡、Apple Pay、掃碼轉帳等）</li>
-        <li>抽成內含金流手續費，費用透明</li>
-        <li>不綁約，月訂年訂彈性切換</li>
-        <li>彈性編輯器，視覺客製度高</li>
-        <li>全方案 AI 商品資訊 + 防盜刷偵測</li>
-        <li>Pinkoi 設計館一鍵搬家工具</li>
-      </ul></div>
-      <div class="cons"><h4>限制</h4><ul>
-        <li>平台較新，生態系尚在建立</li>
-        <li>主要受眾偏向設計/文創品牌</li>
-        <li>產品功能仍在持續建置，部落格、評價等功能待推出</li>
-      </ul></div>
-    </div>
-    <div class="best-for"><strong>最適合</strong>設計文創品牌、Pinkoi 設計館、視覺要求高的小型電商、預算有限的個人創業者</div>
-  </div>
-
-  <!-- SHOPLINE -->
-  <div class="platform-card">
-    <div class="platform-card-header">
-      <div class="platform-name">🟠 SHOPLINE</div>
-      <span class="platform-tag tag-popular">市場龍頭</span>
-    </div>
-    <p class="desc">被稱為「亞洲版 Shopify」，功能生態最完善的台灣主流平台之一，支援聯盟行銷、部落格、會員分級、社群直播等多元功能。適合已有電商經驗的品牌，但因規模大，客服響應速度時常被用戶反映較慢。</p>
-    <div class="info-grid">
-      <div class="info-item"><div class="info-label">方案費用</div><div class="info-value warn">年繳 NT$40,000 + 開通費 NT$5,000 + 系統流量費 1% + 金流手續費 2.5%</div></div>
-      <div class="info-item"><div class="info-label">建站速度</div><div class="info-value">至少 2 週（申請串接需 14 天+）</div></div>
-      <div class="info-item"><div class="info-label">視覺彈性</div><div class="info-value">★★★ 多模板，客製需工程師</div></div>
-      <div class="info-item"><div class="info-label">月成本試算（$100k 營收）</div><div class="info-value warn">約 NT$7,249</div></div>
-    </div>
-    <div class="pros-cons">
-      <div class="pros"><h4>優勢</h4><ul>
-        <li>功能生態最完整（聯盟行銷、部落格、OMO）</li>
-        <li>社群電商整合（FB 直播、LINE）</li>
-        <li>知名度高，消費者信任度好</li>
-        <li>多種行銷工具與數據分析</li>
-      </ul></div>
-      <div class="cons"><h4>限制</h4><ul>
-        <li>費用高（年費+開通費+流量費疊加）</li>
-        <li>建站週期長（金物流申請 14 天+）</li>
-        <li>客服反應被多方反映較慢</li>
-        <li>被爆有中資疑慮（部分用戶在意）</li>
-      </ul></div>
-    </div>
-    <div class="best-for"><strong>最適合</strong>具備電商操作經驗、需要完整功能生態、重視社群直播導購的中型品牌</div>
-  </div>
-
-  <!-- meepShop -->
-  <div class="platform-card">
-    <div class="platform-card-header">
-      <div class="platform-name">🔵 meepShop</div>
-      <span class="platform-tag tag-pro">功能全開</span>
-    </div>
-    <p class="desc">台灣本土平台，最大特色是<strong>所有方案功能全開放</strong>，不因方案高低而鎖定功能。獨家「天眼追蹤」功能可追蹤消費者瀏覽、點擊與停留行為，精準廣告再行銷。抽成方案（銀神燈 1.5%）適合月營業額 25 萬以下的商家；金神燈方案無抽成但年費較高。</p>
-    <div class="info-grid">
-      <div class="info-item"><div class="info-label">方案費用</div><div class="info-value warn">年繳 NT$30,000 + 平台交易費 1.5%（銀神燈）；金神燈年費 NT$72,000 無抽成</div></div>
-      <div class="info-item"><div class="info-label">建站速度</div><div class="info-value">至少 2 週</div></div>
-      <div class="info-item"><div class="info-label">功能易用度</div><div class="info-value">★★ 功能較複雜，需要團隊分工</div></div>
-      <div class="info-item"><div class="info-label">月成本試算（$100k 營收）</div><div class="info-value warn">約 NT$6,500</div></div>
-    </div>
-    <div class="pros-cons">
-      <div class="pros"><h4>優勢</h4><ul>
-        <li>全方案功能完整開放，無隱藏限制</li>
-        <li>獨家「天眼」消費者行為追蹤</li>
-        <li>湊湊團（團購）功能</li>
-        <li>高營業額品牌 CP 值高（金神燈 0 抽成）</li>
-      </ul></div>
-      <div class="cons"><h4>限制</h4><ul>
-        <li>功能複雜，新手上手需時間</li>
-        <li>費用頁透明度不足（用戶反映）</li>
-        <li>月營業額低時，銀神燈抽成划不來</li>
-      </ul></div>
-    </div>
-    <div class="best-for"><strong>最適合</strong>月營業額穩定在 25 萬以上、重視轉換率優化、需要完整功能且有團隊操作的品牌</div>
-  </div>
-
-  <!-- EasyStore -->
-  <div class="platform-card">
-    <div class="platform-card-header">
-      <div class="platform-name">🟢 EasyStore</div>
-      <span class="platform-tag tag-growing">跨境首選</span>
-    </div>
-    <p class="desc">馬來西亞起家（2013 年），2022 年正式進駐台灣，成長迅速，台灣目前約有 2 萬個商家使用。主打「0% 訂單成交手續費」、不綁約，且對東南亞市場整合最強（可串接蝦皮、Lazada、TikTok Shop）。適合有跨境規劃的品牌。</p>
-    <div class="info-grid">
-      <div class="info-item"><div class="info-label">方案費用</div><div class="info-value">月繳 NT$1,299–4,999；不抽成、不綁約</div></div>
-      <div class="info-item"><div class="info-label">金流手續費</div><div class="info-value warn">2.5%（另計）</div></div>
-      <div class="info-item"><div class="info-label">建站速度</div><div class="info-value">至少 2 週</div></div>
-      <div class="info-item"><div class="info-label">月成本試算（$100k 營收）</div><div class="info-value warn">約 NT$4,999</div></div>
-    </div>
-    <div class="pros-cons">
-      <div class="pros"><h4>優勢</h4><ul>
-        <li>0% 訂單成交手續費（所有方案）</li>
-        <li>東南亞多通路整合（蝦皮/Lazada/TikTok）</li>
-        <li>LINE Pay、街口支付等多元金流</li>
-        <li>提供 SEO 功能（4 方案全開放）</li>
-      </ul></div>
-      <div class="cons"><h4>限制</h4><ul>
-        <li>客服以馬來西亞為主，回覆較慢</li>
-        <li>高階行銷功能需外掛串接</li>
-        <li>無一頁式商店功能</li>
-        <li>部分介面中文用法不夠在地化</li>
-      </ul></div>
-    </div>
-    <div class="best-for"><strong>最適合</strong>計劃拓展東南亞市場、蝦皮賣家想要品牌官網、重視 0 抽成且有跨境需求的品牌</div>
-  </div>
-
-  <!-- QDM -->
-  <div class="platform-card">
-    <div class="platform-card-header">
-      <div class="platform-name">🟡 QDM</div>
-      <span class="platform-tag tag-budget">零月費入門</span>
-    </div>
-    <p class="desc">台灣本土平台，最大特色是<strong>月費 NT$0 起跳</strong>（體驗方案），採 CPS（成交抽成）模式，直到有訂單成交才付費。適合剛起步、訂單量不穩的新手電商。不過無抽成方案月費高達 NT$5,000，功能以客服與基礎電商為主。</p>
-    <div class="info-grid">
-      <div class="info-item"><div class="info-label">方案費用</div><div class="info-value">月費 NT$0（抽5%）/ NT$350（抽2%）/ NT$5,000（無抽成）</div></div>
-      <div class="info-item"><div class="info-label">金流手續費</div><div class="info-value warn">2.5%（另計）</div></div>
-      <div class="info-item"><div class="info-label">視覺彈性</div><div class="info-value">★★ 基礎模板為主，客製度低</div></div>
-      <div class="info-item"><div class="info-label">月成本試算（$100k 營收）</div><div class="info-value warn">約 NT$7,500</div></div>
-    </div>
-    <div class="pros-cons">
-      <div class="pros"><h4>優勢</h4><ul>
-        <li>月費 $0 起跳，新手零壓力</li>
-        <li>不需綁約，無開通費</li>
-        <li>所有方案商店套件功能相同</li>
-        <li>網紅導購分潤系統</li>
-      </ul></div>
-      <div class="cons"><h4>限制</h4><ul>
-        <li>抽成方案在高營業額下成本飆高</li>
-        <li>視覺客製度偏低</li>
-        <li>無抽成方案月費 $5,000 反而偏貴</li>
-        <li>AI 功能與自動化較弱</li>
-      </ul></div>
-    </div>
-    <div class="best-for"><strong>最適合</strong>初創電商、驗證商業模式階段、預算極有限、訂單量不穩定的個人賣家</div>
-  </div>
-
-  <!-- WACA -->
-  <div class="platform-card">
-    <div class="platform-card-header">
-      <div class="platform-name">⚪ WACA</div>
-      <span class="platform-tag tag-budget">透明不抽成</span>
-    </div>
-    <p class="desc">以「不綁約、不抽成」為核心主張，月費 NT$3,099 起，提供 30 天免費試用。近期積極導入 AI 自動化功能（文案輔助、商品上架、營運建議），支援 LINE Pay、Apple Pay 多元支付。缺點是進階行銷工具學習曲線較陡。</p>
-    <div class="info-grid">
-      <div class="info-item"><div class="info-label">方案費用</div><div class="info-value">月繳 NT$3,099 起</div></div>
-      <div class="info-item"><div class="info-label">平台交易費</div><div class="info-value green">0% 不抽成</div></div>
-      <div class="info-item"><div class="info-label">金流手續費</div><div class="info-value warn">2.5%（另計）</div></div>
-      <div class="info-item"><div class="info-label">月成本試算（$100k 營收）</div><div class="info-value warn">約 NT$5,599</div></div>
-    </div>
-    <div class="pros-cons">
-      <div class="pros"><h4>優勢</h4><ul>
-        <li>不綁約、不抽成，費用結構最透明</li>
-        <li>30 天免費試用</li>
-        <li>LINE Pay、Apple Pay 多元支付</li>
-        <li>AI 文案與商品上架輔助功能</li>
-        <li>完整優惠活動模組（任選、A+B、加價購）</li>
-      </ul></div>
-      <div class="cons"><h4>限制</h4><ul>
-        <li>無部落格系統（不利內容行銷）</li>
-        <li>進階行銷工具學習曲線較陡</li>
-        <li>企業版有商品數限制</li>
-        <li>視覺設計彈性偏低</li>
-      </ul></div>
-    </div>
-    <div class="best-for"><strong>最適合</strong>預算有限但重視費用透明度的新創品牌、重視多元金流與行銷活動彈性的中小型商家</div>
-  </div>
-
-  <!-- Cyberbiz -->
-  <div class="platform-card">
-    <div class="platform-card-header">
-      <div class="platform-name">🔴 Cyberbiz</div>
-      <span class="platform-tag tag-omni">OMO 整合王者</span>
-    </div>
-    <p class="desc">台灣本土電商平台（2014 年成立），定位中大型品牌電商，是<strong>亞洲唯一擁有自建倉儲的開店平台</strong>。旗下整合品牌官網、智能 POS、雲端 WMS 倉儲三大核心，協助超過 55,000 個品牌完成 OMO 數位轉型。知名客戶包含 FILA、Canon、黑松生技等。</p>
-    <div class="info-grid">
-      <div class="info-item"><div class="info-label">方案月費</div><div class="info-value warn">約 NT$2,700 起，抽成 1–2%（依方案）</div></div>
-      <div class="info-item"><div class="info-label">平台交易費</div><div class="info-value warn">1% GMV（進階版+）或無抽成（進階版）</div></div>
-      <div class="info-item"><div class="info-label">建站速度</div><div class="info-value">至少 2 週</div></div>
-      <div class="info-item"><div class="info-label">免費試用</div><div class="info-value">30 天</div></div>
-    </div>
-    <div class="pros-cons">
-      <div class="pros"><h4>優勢</h4><ul>
-        <li>自建電商倉儲 + 多溫層物流（業界唯一）</li>
-        <li>POS + WMS + 官網三合一整合</li>
-        <li>Cyberbiz Now 機車即時外送（30 分鐘）</li>
-        <li>LINE 官帳深度整合（購物/直播）</li>
-        <li>支援多國貨幣與語言（跨境）</li>
-      </ul></div>
-      <div class="cons"><h4>限制</h4><ul>
-        <li>費用高，中小商家 CP 值較低</li>
-        <li>社群電商功能相對不完整</li>
-        <li>方案定價複雜（有抽成/無抽成版差異）</li>
-        <li>PSI 網站性能分數相對較低</li>
-      </ul></div>
-    </div>
-    <div class="best-for"><strong>最適合</strong>有實體門市、需要線上線下 OMO 整合、依賴大型倉儲物流、有品牌規模的中大型電商</div>
-  </div>
-
-  <!-- BVshop -->
-  <div class="platform-card featured">
-    <div class="platform-card-header">
-      <div class="platform-name">🟤 BVshop</div>
-      <span class="platform-tag tag-enterprise">新銳成長股</span>
-    </div>
-    <p class="desc">台灣本土平台（2023 年成立），2 年內突破 5,000 家用戶，2025 Q1 簽約業績年成長 260%。採固定年費制、全平台 0% 抽成，無隱藏成本。業界首創「天羅地網再行銷系統」與「全域導購分潤系統」，每兩個月更新功能，配備<strong>一對一專屬顧問</strong>從開店到售後全程陪跑。</p>
-    <div class="info-grid">
-      <div class="info-item"><div class="info-label">方案費用</div><div class="info-value">固定年費約 NT$55,000（月均 NT$4,583）</div></div>
-      <div class="info-item"><div class="info-label">平台抽成</div><div class="info-value green">0%，全方案功能開放，不分等級</div></div>
-      <div class="info-item"><div class="info-label">金流手續費</div><div class="info-value warn">2.5%（第三方，另計）</div></div>
-      <div class="info-item"><div class="info-label">免費試用</div><div class="info-value">30 天完整體驗，再決定是否簽約</div></div>
-      <div class="info-item"><div class="info-label">建站速度</div><div class="info-value">至少 2 週</div></div>
-      <div class="info-item"><div class="info-label">月成本試算（$100k 營收）</div><div class="info-value warn">約 NT$7,083</div></div>
-    </div>
-    <div class="pros-cons">
-      <div class="pros"><h4>優勢</h4><ul>
-        <li>固定年費、0 抽成，利潤全歸品牌</li>
-        <li>全方案功能完整開放，不鎖功能</li>
-        <li>一對一專屬顧問，從開站到售後</li>
-        <li>雙月更新功能，以用戶回饋為導向</li>
-        <li>天羅地網再行銷 + 全域導購分潤（業界首創）</li>
-        <li>金流完整（LINE Pay、Apple Pay、街口支付）</li>
-        <li>POS 系統可整合線上線下</li>
-      </ul></div>
-      <div class="cons"><h4>限制</h4><ul>
-        <li>2023 年成立，生態系仍在成熟中</li>
-        <li>採年費制，短期試水溫成本較高</li>
-        <li>主要服務台灣市場，跨境功能尚在規劃</li>
-        <li>知名度相較老牌平台較低</li>
-      </ul></div>
-    </div>
-    <div class="best-for"><strong>最適合</strong>重視零抽成與全功能開放、需要顧問陪跑的中小型品牌；社群電商、直播主、自媒體創業者</div>
-  </div>
-
-</div><!-- end section 1 -->
-
-<!-- SECTION 2: COST -->
-<div class="section">
-  <div class="section-number">02</div>
-  <h2>費用完整比較表</h2>
-  <p class="section-desc">以月營收 NT$100,000 為基準試算，含月費 + 平台交易費 + 金流手續費</p>
-  <div class="cost-table-wrapper">
-    <table>
-      <thead><tr>
-        <th>平台</th>
-        <th>月費（基礎方案）</th>
-        <th>平台交易費</th>
-        <th>金流手續費</th>
-        <th>每月總成本試算<br>（假設營收 $100k）</th>
-      </tr></thead>
-      <tbody>
-        <tr><td>Pinzap</td><td>NT$600 起</td><td class="winner">4%（含金流 2.5%）</td><td class="winner">✅ 已內含</td><td class="winner">約 NT$4,600 ✦ 最低</td></tr>
-        <tr><td>EasyStore</td><td>NT$1,299 起（月繳）</td><td class="winner">0%</td><td class="warn">2.5%</td><td>約 NT$4,999</td></tr>
-        <tr><td>WACA</td><td>NT$3,099 起（月繳）</td><td class="winner">0%</td><td class="warn">2.5%</td><td>約 NT$5,599</td></tr>
-        <tr><td>meepShop</td><td>年費 NT$30,000 ÷12 ≈ $2,500</td><td class="warn">1.5%（銀神燈方案）</td><td class="warn">2.5%</td><td>約 NT$6,500</td></tr>
-        <tr><td>BVshop</td><td>年費 NT$55,000 ÷12 ≈ $4,583</td><td class="winner">0%</td><td class="warn">2.5%</td><td>約 NT$7,083</td></tr>
-        <tr><td>SHOPLINE</td><td>年費 NT$40,000 ÷12 ≈ $3,333</td><td class="warn">系統流量費 1%</td><td class="warn">2.5%</td><td>約 NT$7,249</td></tr>
-        <tr><td>QDM</td><td>NT$350（人氣店，抽 2%）</td><td class="warn">2%</td><td class="warn">2.5%</td><td>約 NT$7,500</td></tr>
-        <tr><td>Cyberbiz</td><td>約 NT$2,700 起</td><td class="warn">1–2%（依方案）</td><td class="warn">2%（綠界特約）</td><td>約 NT$7,700+ ✦ 最高</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="note-source">⚠️ 以上費用以基礎/入門方案為計算基準，實際費用依選擇方案、營業額、金流服務商而異。Cyberbiz 費用需向業務報價確認。BVshop 年費資料來源：遠見雜誌（2024）、工商時報（2025）。資料來源：各平台官網、Welly SEO、GOGOSHOP Blog（2025–2026）。</p>
-</div>
-
-<!-- SECTION 3: FEATURE MATRIX -->
-<div class="section">
-  <div class="section-number">03</div>
-  <h2>核心功能對照表</h2>
-  <p class="section-desc">關鍵選擇維度快速比較</p>
-  <div class="cost-table-wrapper">
-    <table>
-      <thead><tr>
-        <th>功能維度</th>
-        <th>Pinzap</th>
-        <th>SHOPLINE</th>
-        <th>meepShop</th>
-        <th>EasyStore</th>
-        <th>QDM</th>
-        <th>WACA</th>
-        <th>Cyberbiz</th>
-        <th>BVshop</th>
-      </tr></thead>
-      <tbody>
-        <tr>
-          <td>建站速度</td>
-          <td class="winner">★★★★★<br>3–5天</td>
-          <td>★★★<br>2週+</td><td>★★★<br>2週+</td><td>★★★<br>2週+</td><td>★★★<br>2週+</td><td>★★★<br>2週+</td><td>★★★<br>2週+</td><td>★★★<br>2週+</td>
-        </tr>
-        <tr>
-          <td>視覺彈性</td>
-          <td class="winner">★★★★★<br>高度客製</td>
-          <td>★★★<br>需工程師</td><td>★★★<br>拖拉式</td><td>★★★</td><td>★★<br>基礎模板</td><td>★★<br>基礎模板</td><td>★★★</td><td>★★★<br>拖拉式</td>
-        </tr>
-        <tr>
-          <td>金物流整合</td>
-          <td class="winner">✅ 即開即用</td>
-          <td>需申請串接</td><td>需申請串接</td><td>需申請串接</td><td>需申請串接</td><td>需申請串接</td><td>需申請串接</td><td>需申請串接</td>
-        </tr>
-        <tr>
-          <td>AI 功能</td>
-          <td class="winner">★★★<br>商品+防盜刷</td>
-          <td>★★★<br>依方案</td><td>★★★<br>天眼追蹤</td><td>★★</td><td>★★<br>客服為主</td><td>★★★<br>文案輔助</td><td>★★<br>基本</td><td>★★★<br>文案生成</td>
-        </tr>
-        <tr>
-          <td>OMO/POS 整合</td>
-          <td>❌</td>
-          <td>✅</td><td>部分</td><td>✅ 行動POS</td><td>❌</td><td>✅ 可加購</td><td class="winner">✅✅ 最完整</td><td>✅ POS 可整合</td>
-        </tr>
-        <tr>
-          <td>跨境/東南亞</td>
-          <td>❌</td>
-          <td>✅</td><td>❌</td><td class="winner">✅✅ 蝦皮/Lazada</td><td>❌</td><td>❌</td><td>✅ 多國語言</td><td>規劃中</td>
-        </tr>
-        <tr>
-          <td>再行銷工具</td>
-          <td>基礎</td>
-          <td>完整</td><td>天眼追蹤</td><td>基礎</td><td>基礎</td><td>EDM 行銷</td><td>完整</td><td class="winner">天羅地網系統</td>
-        </tr>
-        <tr>
-          <td>倉儲物流</td>
-          <td>❌</td>
-          <td>❌</td><td>❌</td><td>部分整合</td><td>❌</td><td>❌</td><td class="winner">✅✅ 自建倉儲</td><td>合作倉儲</td>
-        </tr>
-        <tr>
-          <td>費用透明度</td>
-          <td class="winner">★★★★★</td>
-          <td>★★★</td><td>★★★</td><td class="winner">★★★★★</td><td>★★★★</td><td class="winner">★★★★★</td><td>★★★</td><td class="winner">★★★★★</td>
-        </tr>
-        <tr>
-          <td>平台抽成</td>
-          <td class="winner">4% 包含金流手續費</td>
-          <td class="warn">1%</td><td class="warn">0–1.5%</td><td class="winner">0%</td><td class="warn">0–5%</td><td class="winner">0%</td><td class="warn">1–2%</td><td class="winner">0%</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- SECTION 4: CUSTOMER SERVICE -->
-<div class="section">
-  <div class="section-number">04</div>
-  <h2>客服體驗評論概述</h2>
-  <p class="section-desc">整合自 Welly SEO、Jerry 成長駭客、GOGOSHOP Blog、Medium 用戶評測等公開評論（2024–2025）。評論代表用戶使用體驗，非官方立場。</p>
-  <div class="cs-grid">
-
-    <div class="cs-card">
-      <div class="cs-name">🟣 Pinzap</div>
-      <div class="cs-rating">
-        <span class="stars">★★★★☆</span>
-        <span class="cs-badge pos">台灣在地支援</span>
+    <a class="card" href="/ecommerce-tools">
+      <div class="card-left">
+        <div class="card-icon">🛒</div>
+        <div>
+          <div class="card-title">電商架站工具完整比較</div>
+          <div class="card-desc">市面上 8 種架站工具，哪個最適合你？Pinzap、SHOPLINE、meepShop 等完整評比</div>
+        </div>
       </div>
-      <p class="cs-desc">由 Pinkoi 台灣團隊支援，熟悉本地市場與用戶需求。Pinzap 後台有直接聯繫客服的管道，以 Email 和訊息為主要溝通工具。用戶普遍反映開店顧問回應積極。</p>
-      <p class="cs-source">來源：Pinzap 官方說明</p>
-    </div>
+      <div class="card-arrow">→</div>
+    </a>
 
-    <div class="cs-card">
-      <div class="cs-name">🟠 SHOPLINE</div>
-      <div class="cs-rating">
-        <span class="stars">★★☆☆☆</span>
-        <span class="cs-badge neg">客服被大量抱怨</span>
+    <a class="card" href="/Ishigaki-Island">
+      <div class="card-left">
+        <div class="card-icon">🏝️</div>
+        <div>
+          <div class="card-title">石垣島攻略</div>
+          <div class="card-desc">行程規劃、景點推薦與旅遊資訊整理</div>
+        </div>
       </div>
-      <p class="cs-desc">多個評測與用戶社群反映客服難聯繫、回應速度慢，被稱為「最難找到客服的大平台」。因規模大、海外據點多，台灣用戶遭遇跨時區支援落差。電商討論社團中轉讓 SHOPLINE 帳號的貼文最多。</p>
-      <p class="cs-source">來源：Welly SEO、Jerry 成長駭客、Medium 用戶評測（2024–2025）</p>
-    </div>
-
-    <div class="cs-card">
-      <div class="cs-name">🔵 meepShop</div>
-      <div class="cs-rating">
-        <span class="stars">★★★☆☆</span>
-        <span class="cs-badge mid">費用說明不透明</span>
-      </div>
-      <p class="cs-desc">台灣本土團隊，客服可達。主要詬病是費用頁面說明不夠清楚，部分用戶反映「不知道金流到底怎麼算」。線上客服聯繫管道被反映不夠即時，有時需等候較長時間。</p>
-      <p class="cs-source">來源：Jerry 成長駭客、vocus 用戶評測（2025）</p>
-    </div>
-
-    <div class="cs-card">
-      <div class="cs-name">🟢 EasyStore</div>
-      <div class="cs-rating">
-        <span class="stars">★★☆☆☆</span>
-        <span class="cs-badge neg">海外團隊，回覆較慢</span>
-      </div>
-      <p class="cs-desc">總部在馬來西亞，台灣用戶反映客服主要以馬來西亞時間處理，一天通常只回覆一次。需要把問題一次列清楚再發問。Help Center 以英文為主，中文說明不夠完整。</p>
-      <p class="cs-source">來源：Fong Lee Medium 評測、犬哥網站（2024）</p>
-    </div>
-
-    <div class="cs-card">
-      <div class="cs-name">🟡 QDM</div>
-      <div class="cs-rating">
-        <span class="stars">★★★★☆</span>
-        <span class="cs-badge pos">真人即時客服</span>
-      </div>
-      <p class="cs-desc">提供真人即時對話客服，可透過 Facebook、Email 或直接來電聯繫開店顧問，是台灣中小型平台中客服可達性較高的平台之一。但整體服務規模較小，適合簡單問題諮詢。</p>
-      <p class="cs-source">來源：vocus 平台比較文（2025）</p>
-    </div>
-
-    <div class="cs-card">
-      <div class="cs-name">⚪ WACA</div>
-      <div class="cs-rating">
-        <span class="stars">★★★★☆</span>
-        <span class="cs-badge pos">台灣在地客服</span>
-      </div>
-      <p class="cs-desc">台灣本土團隊，客服可達性佳。多位用戶評測提到有專屬開店顧問協助。主要缺點是進階行銷工具學習曲線較陡，但客服會協助說明。整體服務評價在中型平台中屬於正面。</p>
-      <p class="cs-source">來源：Jerry 成長駭客、犬哥網站（2024–2025）</p>
-    </div>
-
-    <div class="cs-card">
-      <div class="cs-name">🔴 Cyberbiz</div>
-      <div class="cs-rating">
-        <span class="stars">★★★☆☆</span>
-        <span class="cs-badge mid">企業型服務為主</span>
-      </div>
-      <p class="cs-desc">提供專業顧問服務，但主要針對中大型企業客戶。中小商家反映顧問服務資源相對較少，部分問題需等候排程。定位上是「企業型服務」，初創品牌可能感受到服務落差。</p>
-      <p class="cs-source">來源：GOGOSHOP Blog、Welly SEO（2025）</p>
-    </div>
-
-    <div class="cs-card">
-      <div class="cs-name">🟤 BVshop</div>
-      <div class="cs-rating">
-        <span class="stars">★★★★★</span>
-        <span class="cs-badge pos">一對一顧問，評價最高</span>
-      </div>
-      <p class="cs-desc">最大差異化優勢之一。提供專屬顧問一對一服務，從開店到售後全程陪跑，定期舉辦品牌聚會讓商家交流。Jerry 實測評測中認為後台直覺好上手。工商時報報導中業主高度認可顧問陪跑模式。</p>
-      <p class="cs-source">來源：Jerry 成長駭客實測、遠見雜誌、工商時報（2024–2025）</p>
-    </div>
+      <div class="card-arrow">→</div>
+    </a>
 
   </div>
-</div>
-
-<!-- SECTION 5: DECISION GUIDE -->
-<div class="section">
-  <div class="section-number">05</div>
-  <h2>決策指南：你的情境，選哪個？</h2>
-  <p class="section-desc">對號入座，找到最適合你的平台</p>
-
-  <div class="decision-card">
-    <div class="decision-icon">🚀</div>
-    <div class="decision-content">
-      <h3>我是創業初期，預算有限，想快速驗證</h3>
-      <p>建站速度和起始成本是第一優先。需要最快上線，不想被金物流申請卡關。</p>
-      <span class="rec">→ 首選 Pinzap（3–5天上線、$600月費）；零月費驗證期可考慮 QDM</span>
-    </div>
-  </div>
-
-  <div class="decision-card">
-    <div class="decision-icon">🎨</div>
-    <div class="decision-content">
-      <h3>我是設計/文創/個人品牌，視覺是命脈</h3>
-      <p>需要獨特的視覺設計感，不想用制式模板。需要彈性編輯器和良好的消費者體驗。</p>
-      <span class="rec">→ 首選 Pinzap（視覺彈性最高 + 設計文創生態）</span>
-    </div>
-  </div>
-
-  <div class="decision-card">
-    <div class="decision-icon">💰</div>
-    <div class="decision-content">
-      <h3>我最在意費用透明、不要被抽成</h3>
-      <p>希望費用結構清楚，不受月營業額波動影響，固定成本好控制。</p>
-      <span class="rec">→ Pinzap（費用結構簡單）、WACA（0 抽成）、EasyStore（0 抽成）、BVshop（0 抽成年費制）</span>
-    </div>
-  </div>
-
-  <div class="decision-card">
-    <div class="decision-icon">🤝</div>
-    <div class="decision-content">
-      <h3>我需要有人陪我從頭建站，顧問服務很重要</h3>
-      <p>第一次建官網，需要專人陪伴引導、不想自己摸索，售後也需要有人解答。</p>
-      <span class="rec">→ 首選 BVshop（業界唯一一對一顧問全程陪跑，客服評價最高）</span>
-    </div>
-  </div>
-
-  <div class="decision-card">
-    <div class="decision-icon">🌏</div>
-    <div class="decision-content">
-      <h3>我有計劃拓展東南亞市場</h3>
-      <p>需要與蝦皮、Lazada、TikTok Shop 等東南亞通路整合，或服務馬來西亞/新加坡消費者。</p>
-      <span class="rec">→ 首選 EasyStore（東南亞整合最強，含台灣+東南亞蝦皮）</span>
-    </div>
-  </div>
-
-  <div class="decision-card">
-    <div class="decision-icon">🏪</div>
-    <div class="decision-content">
-      <h3>我有實體門市，需要線上線下整合</h3>
-      <p>庫存、訂單、會員資料需要跨線上線下同步，可能有多個門市管理需求。</p>
-      <span class="rec">→ 首選 Cyberbiz（POS+WMS+官網三合一，業界最完整 OMO）；SHOPLINE、EasyStore 次之</span>
-    </div>
-  </div>
-
-  <div class="decision-card">
-    <div class="decision-icon">📈</div>
-    <div class="decision-content">
-      <h3>我是中大型品牌，月營業額穩定超過 100 萬</h3>
-      <p>需要完整的功能生態、聯盟行銷、深度數據分析，且有電商團隊操作。</p>
-      <span class="rec">→ SHOPLINE（功能最完整生態）或 meepShop 金神燈（功能全開 + 高客單 CP 值佳）</span>
-    </div>
-  </div>
-
-  <div class="decision-card">
-    <div class="decision-icon">🏭</div>
-    <div class="decision-content">
-      <h3>我有大量倉儲物流需求或食品冷鏈</h3>
-      <p>需要精準效期管理、快速出貨、即時貨態追蹤，甚至 30 分鐘即時配送。</p>
-      <span class="rec">→ 唯一選擇 Cyberbiz（業界唯一自建倉儲 + 多溫層物流 + Cyberbiz Now 外送）</span>
-    </div>
-  </div>
-
-</div>
-
-<div class="disclaimer" style="margin:40px auto;max-width:900px">
-  <strong>資料說明與免責聲明：</strong>本文費用數據結合使用者提供的比較圖表（Pinzap 官方比較資料）與網路公開資訊（Welly SEO、GOGOSHOP Blog、各平台官網等，截至 2026 年 4 月）整理而成。WACA 月費 NT$3,099 為更新後的方案費用（原始資料更正）。BVshop 年費 NT$55,000 資料來源：遠見雜誌（2024）、工商時報（2025）。各平台方案定價、功能與抽成比例可能隨時更新，建議實際選用前至各平台官網確認最新方案，並善用免費試用期。本文不代表任何平台之商業立場。
-</div>
+</main>
 
 <footer>
-  電商架站工具完整比較（8 家） · 2026 年 4 月更新 · 資料整合自官方與第三方公開資訊
+  Rafi's Pages
 </footer>
 
 </body>
