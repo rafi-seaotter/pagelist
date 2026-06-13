@@ -1,0 +1,4 @@
+fetch('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL')
+  .then(r => r.json())
+  .then(d => console.log(d.find(x => x.Code === '0050')))
+  .catch(e => console.log('被擋了：', e));
