@@ -3,55 +3,283 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TWSE CORS 測試</title>
+<title>0050 金額換股試算</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-  body{font-family:system-ui,"Noto Sans TC",sans-serif;max-width:680px;margin:40px auto;padding:0 20px;line-height:1.6;color:#1a1a1a}
-  h1{font-size:20px}
-  button{font-size:15px;padding:10px 18px;border:0;border-radius:8px;background:#14110F;color:#fff;cursor:pointer}
-  #out{margin-top:20px;padding:16px;border-radius:10px;background:#f4f4f5;white-space:pre-wrap;font-family:"IBM Plex Mono",monospace;font-size:13px;border:1px solid #e4e4e7}
-  .ok{color:#15875A;font-weight:600}
-  .err{color:#D32F3C;font-weight:600}
-  .url{font-family:monospace;font-size:12px;color:#666;word-break:break-all}
+  :root{
+    --paper:#E8EAED; --surface:#FFFFFF; --ink:#121417; --ink-soft:#54585F;
+    --line:#D7DBE0; --brass:#A47A2E; --up:#D32F3C; --down:#15875A; --warn:#9A6B00;
+    --shadow:0 1px 0 rgba(18,20,23,.04), 0 12px 28px -18px rgba(18,20,23,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper);color:var(--ink)}
+  body{font-family:"Noto Sans TC",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;padding:clamp(16px,4vw,48px) 16px;display:flex;justify-content:center}
+  .num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums lining-nums}
+  .eyebrow{font-family:"Space Grotesk",sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:600;color:var(--ink-soft)}
+  .wrap{width:100%;max-width:540px}
+
+  .ticker{background:var(--ink);color:#F3F4F6;border-radius:18px;padding:22px 24px;box-shadow:var(--shadow)}
+  .ticker .topline{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .symbol{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:15px;letter-spacing:.04em}
+  .symbol b{color:var(--brass)} .symbol span{color:#9AA0A8;font-weight:500;margin-left:8px;font-size:13px}
+  #refreshBtn{background:transparent;border:1px solid #3A3F47;color:#C9CDD3;font-family:"Space Grotesk",sans-serif;font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer;letter-spacing:.04em;transition:border-color .2s,color .2s;display:inline-flex;align-items:center;gap:6px}
+  #refreshBtn:hover{border-color:var(--brass);color:#fff}
+  #refreshBtn:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+  #refreshBtn[disabled]{opacity:.5;cursor:wait}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--brass);display:inline-block}
+  .price-row{display:flex;align-items:flex-end;gap:16px;margin-top:14px}
+  .price-block .lbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9AA0A8;font-family:"Space Grotesk",sans-serif}
+  .price{font-size:clamp(34px,9vw,46px);font-weight:600;line-height:1;margin-top:6px}
+  .price .cur{font-size:.45em;color:#9AA0A8;margin-right:4px;vertical-align:.18em}
+  .asof{font-size:11px;color:#7C828B;margin-top:14px;letter-spacing:.02em}
+  .pulse{animation:pulse .9s ease}
+  @keyframes pulse{0%{color:var(--brass)}100%{}}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-top:14px;box-shadow:var(--shadow)}
+  label.field{display:block}
+  .field .lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .hint{font-size:11px;color:var(--ink-soft)}
+  .input-shell{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;background:#FBFBFC;transition:border-color .18s}
+  .input-shell:focus-within{border-color:var(--brass)}
+  .input-shell .pre{padding:0 4px 0 14px;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;font-size:16px}
+  .input-shell input{flex:1;border:0;background:transparent;padding:14px 14px 14px 4px;font-family:"IBM Plex Mono",monospace;font-size:20px;font-weight:500;color:var(--ink);width:100%}
+  .input-shell input:focus{outline:none}
+  .input-shell .suf{padding:0 14px 0 0;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;font-size:15px}
+
+  .editable-row{display:flex;gap:12px;margin-top:14px}
+  .editable-row .mini{flex:1}
+  .mini .lbl,.field .lbl .eyebrow{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-family:"Space Grotesk",sans-serif}
+  .mini .lbl{margin-bottom:6px;display:block}
+  .mini .input-shell input{font-size:16px;padding:10px 12px}
+  .mini .input-shell .pre{font-size:14px;padding-left:12px}
+  .mini .input-shell .suf{font-size:13px}
+
+  #calcBtn{width:100%;margin-top:18px;border:0;cursor:pointer;background:var(--ink);color:#fff;border-radius:12px;padding:15px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;letter-spacing:.08em;transition:transform .08s ease,background .2s}
+  #calcBtn:hover{background:#000} #calcBtn:active{transform:translateY(1px)}
+  #calcBtn:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+  .msg{font-size:13px;color:var(--up);margin-top:10px;min-height:0}
+
+  .results{margin-top:14px}
+  .results.hidden{display:none}
+  .shares-box{background:#FBF7EE;border:1px solid var(--line);border-radius:18px;padding:18px 22px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;box-shadow:var(--shadow)}
+  .shares-box .t{font-weight:700;font-size:14px;color:var(--brass)}
+  .shares-box .s{font-size:11px;color:var(--ink-soft);margin-top:2px}
+  .shares-box .v{font-size:clamp(24px,7vw,32px);font-weight:600;text-align:right;white-space:nowrap}
+  .shares-box .v .unit{font-size:.5em;color:var(--ink-soft);margin-left:4px}
+
+  .grid-title{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);font-family:"Space Grotesk",sans-serif;margin:18px 0 8px 2px}
+  .scen{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+  .cell{background:var(--surface);padding:14px 15px}
+  .cell.rec{background:#FBF7EE}
+  .cell .h{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700}
+  .badge{font-size:9px;background:var(--brass);color:#fff;border-radius:999px;padding:1px 6px;letter-spacing:.05em;font-weight:600}
+  .flag{font-size:11px;color:var(--warn)}
+  .cell .pct{font-size:11px;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;margin-top:1px}
+  .cell .line{display:flex;align-items:baseline;justify-content:space-between;gap:6px;margin-top:9px}
+  .cell .k{font-size:10px;letter-spacing:.08em;color:var(--ink-soft);font-family:"Space Grotesk",sans-serif}
+  .cell .v{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:17px}
+  .cell .v.small{font-size:13px;color:var(--ink-soft);font-weight:500}
+
+  .manual-card{margin-top:1px;background:var(--surface);border:1px solid var(--line);border-radius:0 0 18px 18px;border-top:0;padding:14px 16px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .manual-card.hidden{display:none}
+  .manual-card .h{font-size:13px;font-weight:700}
+  .manual-card .nums{display:flex;gap:16px}
+  .manual-card .nums div{text-align:right}
+  .manual-card .k{font-size:10px;color:var(--ink-soft);font-family:"Space Grotesk",sans-serif}
+  .manual-card .v{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:15px}
+
+  .gridnote{font-size:11px;color:var(--ink-soft);margin-top:8px;line-height:1.5;padding:0 2px}
+  .reveal{animation:rise .4s cubic-bezier(.2,.7,.3,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  details{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  summary{cursor:pointer;padding:14px 20px;font-size:13px;font-weight:500;color:var(--ink-soft);list-style:none;display:flex;align-items:center;gap:8px}
+  summary::-webkit-details-marker{display:none}
+  summary .chev{margin-left:auto;transition:transform .2s} details[open] summary .chev{transform:rotate(180deg)}
+  .disc{padding:0 20px 18px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+  .disc b{color:var(--ink)} .disc ol{padding-left:18px;margin-top:6px} .disc li{margin-bottom:6px}
+  footer{text-align:center;font-size:11px;color:var(--ink-soft);margin-top:18px;line-height:1.6}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-  <h1>TWSE OpenAPI CORS 測試</h1>
-  <p>這支頁面會嘗試從你目前的網域，直接向證交所抓「全部上市個股當日成交」資料，並找出 0050。</p>
-  <p class="url">GET https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL</p>
-  <button id="run">開始測試</button>
-  <div id="out">點上面的按鈕開始。</div>
+<div class="wrap">
+
+  <section class="ticker" aria-label="0050 行情">
+    <div class="topline">
+      <div class="symbol"><b>0050</b><span>元大台灣50</span></div>
+      <button id="refreshBtn" type="button"><span class="dot"></span>更新股價</button>
+    </div>
+    <div class="price-row">
+      <div class="price-block">
+        <div class="lbl">目前股價</div>
+        <div class="price num"><span class="cur">NT$</span><span id="priceShow">—</span></div>
+      </div>
+    </div>
+    <div class="asof" id="asof">載入中…</div>
+  </section>
+
+  <section class="panel">
+    <label class="field" for="amount">
+      <span class="lbl"><span class="eyebrow">輸入金額</span><span class="hint">想換成多少 0050？</span></span>
+      <span class="input-shell"><span class="pre">NT$</span>
+        <input id="amount" class="num" type="text" inputmode="decimal" placeholder="100,000" autocomplete="off" /></span>
+    </label>
+
+    <div class="editable-row">
+      <div class="mini">
+        <span class="lbl">股價（自動帶入，可改）</span>
+        <span class="input-shell"><span class="pre">NT$</span>
+          <input id="priceInput" class="num" type="text" inputmode="decimal" autocomplete="off" /></span>
+      </div>
+      <div class="mini">
+        <span class="lbl">手動報酬率（選填）</span>
+        <span class="input-shell">
+          <input id="manualRet" class="num" type="text" inputmode="decimal" placeholder="—" autocomplete="off" />
+          <span class="suf">%</span></span>
+      </div>
+    </div>
+
+    <button id="calcBtn" type="button">計　算</button>
+    <div class="msg" id="msg" role="status"></div>
+  </section>
+
+  <section class="results hidden" id="results" aria-live="polite">
+    <div class="shares-box">
+      <div><div class="t">等值股數</div><div class="s" id="sharesSub">—</div></div>
+      <div class="v num"><span id="shares">—</span><span class="unit">股</span></div>
+    </div>
+
+    <div class="grid-title">六種報酬率基準下的推估金額</div>
+    <div class="scen" id="scen"></div>
+    <div class="manual-card hidden" id="manualCard">
+      <div class="h" id="manualH">手動 —%</div>
+      <div class="nums">
+        <div><div class="k">3 個月後</div><div class="v">NT$ <span id="mManual3">—</span></div></div>
+        <div><div class="k">1 年後</div><div class="v">NT$ <span id="mManual1">—</span></div></div>
+      </div>
+    </div>
+    <div class="gridnote">金額單位：新台幣元。標 <span class="flag">⚠</span> 者為近年 AI 多頭推升的歷史年化，外推會高估，僅供「若歷史重演」情境參考；<span class="badge">建議</span> 為長期保守值。</div>
+  </section>
+
+  <details>
+    <summary>計算方法與重要限制<span class="chev">▾</span></summary>
+    <div class="disc">
+      <ol>
+        <li><b>等值股數</b>＝ 輸入金額 ÷ 目前股價。顯示到小數三位僅供比例參考，實務上零股最小單位為 1 股。</li>
+        <li><b>3 個月後</b>＝ 金額 ×（1＋年化報酬率）<sup>0.25</sup>；<b>1 年後</b>＝ 金額 ×（1＋年化報酬率）。屬機械式外推。</li>
+        <li><b>這不是預測，也不是投資建議。</b>近年 0050 受台積電與 AI 行情推升出現異常高報酬（近一年曾達 +120%），<b>幾乎不可能重演</b>。0050 自 2004 年以來年化約 12.8%，長期規劃一般建議用 8～10% 估算。</li>
+        <li><b>股價</b>來自證交所盤後收盤（透過你的 Apps Script 代理），每日約 16:00 後更新，非即時。抓不到時可在上方手動輸入。</li>
+        <li><b>六格報酬率</b>的歷史數字需手動維護：回 Yahoo 個股「績效」頁抄最新值，改程式碼最上面的 SCENARIOS 即可。</li>
+      </ol>
+    </div>
+  </details>
+
+  <footer>僅供個人試算 · 過去績效不代表未來表現 · 投資前請自行評估風險</footer>
+</div>
 
 <script>
-  const out = document.getElementById('out');
-  document.getElementById('run').addEventListener('click', async () => {
-    out.textContent = '請求中…';
-    try {
-      const res = await fetch('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL');
-      if (!res.ok) { out.innerHTML = `<span class="err">HTTP 錯誤：${res.status}</span>`; return; }
-      const data = await res.json();
-      const total = Array.isArray(data) ? data.length : 0;
+(function(){
+  // ┌─────────────────────────────────────────────────────────────┐
+  // │  ★ 你的 Apps Script 網頁應用程式網址（/exec 結尾）★              │
+  // └─────────────────────────────────────────────────────────────┘
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwYS5OAyQj3EVWPtV8rQwgXZDbaICs-xRZOXe6cejUL7eWQQtfmyb-CTTQmv_iQI4ehnQ/exec";
 
-      // 找出 0050（欄位名稱可能是 Code 或中文鍵，兩種都試）
-      const row = data.find(x => x.Code === '0050' || x['證券代號'] === '0050' || x.code === '0050');
+  // 六種報酬率基準（年化 %）。每月回 Yahoo 個股績效頁更新即可。基準日 2026/06/12。
+  // boom=true 會標 ⚠（多頭推升、外推高估）；rec=true 會標「建議」。
+  const SCENARIOS = [
+    {label:'長期保守', pct:10,     rec:true },
+    {label:'近 10 年', pct:21.29,  boom:true},
+    {label:'近 5 年',  pct:25.53,  boom:true},
+    {label:'近 3 年',  pct:48.53,  boom:true},
+    {label:'近 2 年',  pct:54.36,  boom:true},
+    {label:'近 1 年',  pct:120.13, boom:true}
+  ];
 
-      let msg = `<span class="ok">✅ CORS 通過。</span>\n`;
-      msg += `這個網域可以直接撈 TWSE，不需要任何後端／資料庫。\n`;
-      msg += `總共回傳 ${total} 筆資料。\n\n`;
-      if (row) {
-        msg += `找到 0050，原始欄位如下（照這些 key 名稱寫前端）：\n`;
-        msg += JSON.stringify(row, null, 2);
-      } else {
-        msg += `⚠️ 沒在這支裡找到 0050（ETF 可能不在這支 endpoint）。\n`;
-        msg += `第一筆資料長這樣，給你看欄位名稱：\n`;
-        msg += JSON.stringify(data[0], null, 2);
-      }
-      out.innerHTML = msg;
-    } catch (e) {
-      out.innerHTML = `<span class="err">❌ 被擋了（很可能是 CORS）。</span>\n` +
-        `錯誤訊息：${e.message}\n\n` +
-        `代表這個網域不能直接撈 TWSE，需要加一層代理（例如 Google Apps Script）。`;
-    }
+  const $ = s => document.querySelector(s);
+  const twNum = (n, d=0) => n.toLocaleString('zh-TW',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const parseNum = v => { const n = parseFloat(String(v).replace(/,/g,'').trim()); return isFinite(n)?n:NaN; };
+
+  const amountEl=$('#amount'), priceEl=$('#priceInput'), manualEl=$('#manualRet'), msg=$('#msg');
+
+  amountEl.addEventListener('input', e=>{
+    const raw=e.target.value.replace(/[^\d.]/g,''); const parts=raw.split('.');
+    let int=parts[0]?Number(parts[0]).toLocaleString('en-US'):'';
+    e.target.value=parts.length>1?int+'.'+parts[1].slice(0,2):int;
   });
-</script>
-</body>
-</html>
+  priceEl.addEventListener('input', ()=>{ const p=parseNum(priceEl.value); if(!isNaN(p)) $('#priceShow').textContent=p.toLocaleString('zh-TW',{maximumFractionDigits:2}); });
+
+  function compute(){
+    const amount=parseNum(amountEl.value), price=parseNum(priceEl.value);
+    if(isNaN(amount)||amount<=0){ msg.textContent='請輸入大於 0 的金額。'; amountEl.focus(); return; }
+    if(isNaN(price)||price<=0){ msg.textContent='還沒有股價：請按「更新股價」，或直接在股價欄手動輸入。'; priceEl.focus(); return; }
+    msg.textContent='';
+
+    const shares=amount/price;
+    $('#shares').textContent=twNum(shares,3);
+    $('#sharesSub').textContent='以 NT$'+twNum(price,2)+' 換算';
+
+    const cells = SCENARIOS.map(s=>{
+      const r=s.pct/100, m3=amount*Math.pow(1+r,0.25), y1=amount*(1+r);
+      const tag = s.rec?'<span class="badge">建議</span>':(s.boom?'<span class="flag">⚠</span>':'');
+      return `<div class="cell${s.rec?' rec':''}">
+        <div class="h">${s.label} ${tag}</div>
+        <div class="pct">年化 ${s.pct.toFixed(2)}%</div>
+        <div class="line"><span class="k">1 年後</span><span class="v">${twNum(Math.round(y1))}</span></div>
+        <div class="line"><span class="k">3 個月後</span><span class="v small">${twNum(Math.round(m3))}</span></div>
+      </div>`;
+    }).join('');
+    $('#scen').innerHTML = cells;
+
+    // 手動（選填）：只有填了才算、才顯示，放在最後
+    const mr=parseNum(manualEl.value), card=$('#manualCard');
+    if(!isNaN(mr)){
+      const r=mr/100;
+      $('#manualH').textContent='手動 '+mr.toFixed(2)+'%';
+      $('#mManual3').textContent=twNum(Math.round(amount*Math.pow(1+r,0.25)));
+      $('#mManual1').textContent=twNum(Math.round(amount*(1+r)));
+      card.classList.remove('hidden');
+    } else { card.classList.add('hidden'); }
+
+    const res=$('#results'); res.classList.remove('hidden','reveal'); void res.offsetWidth; res.classList.add('reveal');
+  }
+
+  $('#calcBtn').addEventListener('click', compute);
+  [amountEl, priceEl, manualEl].forEach(el=> el.addEventListener('keydown', e=>{ if(e.key==='Enter') compute(); }));
+
+  function fmtDate(d){
+    d=String(d||'');
+    if(/^\d{7}$/.test(d)) return (parseInt(d.slice(0,3),10)+1911)+'/'+d.slice(3,5)+'/'+d.slice(5,7); // 民國轉西元
+    return d;
+  }
+  function handlePrice(obj){
+    const asof=$('#asof');
+    if(obj && obj.ok && obj.close>0){
+      priceEl.value=Number(obj.close).toFixed(2);
+      const pe=$('#priceShow'); pe.textContent=Number(obj.close).toLocaleString('zh-TW',{maximumFractionDigits:2});
+      pe.classList.remove('pulse'); void pe.offsetWidth; pe.classList.add('pulse');
+      asof.textContent=`股價來源：證交所 ${obj.source||''}${obj.date?'（'+fmtDate(obj.date)+'）':''} · 盤後收盤，非即時`;
+      if(parseNum(amountEl.value)>0) compute();
+    } else {
+      asof.textContent='代理有回應但沒拿到價格：'+(obj && obj.error ? obj.error : '未知原因')+'。可手動輸入股價。';
+    }
+  }
+  // 用 JSONP（<script> 載入）取代 fetch，徹底繞過 GAS 跨網域的 CORS 轉址問題
+  function refresh(){
+    const btn=$('#refreshBtn'), asof=$('#asof');
+    if(GAS_URL.indexOf('exec')===-1){ asof.textContent='尚未設定代理網址（GAS_URL）。可先手動輸入股價。'; return; }
+    btn.disabled=true; const old=btn.innerHTML; btn.innerHTML='<span class="dot"></span>更新中…';
+    const cb='gasCb_'+Date.now(), s=document.createElement('script'); let done=false, timer;
+    function cleanup(){ clearTimeout(timer); try{delete window[cb];}catch(e){window[cb]=undefined;} if(s.parentNode) s.parentNode.removeChild(s); btn.disabled=false; btn.innerHTML=old; }
+    window[cb]=function(obj){ if(done) return; done=true; handlePrice(obj); cleanup(); };
+    s.onerror=function(){ if(done) return; done=true; asof.textContent='載入代理失敗。可先手動輸入股價照常使用。'; cleanup(); };
+    timer=setTimeout(function(){ if(done) return; done=true; asof.textContent='連不到代理（逾時）。請確認 GAS 已部署為「新版本」且程式碼支援 callback。可先手動輸入股價。'; cleanup(); },12000);
+    s.src=GAS_URL+(GAS_URL.indexOf('?')>=0?'&':'?')+'callback='+cb;
+    document.body.appendChild(s);
+  }
+  $('#refreshBtn').addEventListener('click', refresh);
+
+  refresh();
+})();
