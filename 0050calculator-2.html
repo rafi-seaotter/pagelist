@@ -185,7 +185,7 @@
   // ┌─────────────────────────────────────────────────────────────┐
   // │  ★ 你的 Apps Script 網頁應用程式網址（/exec 結尾）★              │
   // └─────────────────────────────────────────────────────────────┘
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwYS5OAyQj3EVWPtV8rQwgXZDbaICs-xRZOXe6cejUL7eWQQtfmyb-CTTQmv_iQI4ehnQ/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwLXPkPPPL8nuwO38o21sca4YK9SICKkTJkM6WvCeYjywi4onO-hNpggwl4WHFBUQKT0A/exec";
 
   // 六種報酬率基準（年化 %）。每月回 Yahoo 個股績效頁更新即可。基準日 2026/06/12。
   // boom=true 會標 ⚠（多頭推升、外推高估）；rec=true 會標「建議」。
@@ -249,25 +249,35 @@
   $('#calcBtn').addEventListener('click', compute);
   [amountEl, priceEl, manualEl].forEach(el=> el.addEventListener('keydown', e=>{ if(e.key==='Enter') compute(); }));
 
-  async function refresh(){
+  function fmtDate(d){
+    d=String(d||'');
+    if(/^\d{7}$/.test(d)) return (parseInt(d.slice(0,3),10)+1911)+'/'+d.slice(3,5)+'/'+d.slice(5,7); // 民國轉西元
+    return d;
+  }
+  function handlePrice(obj){
+    const asof=$('#asof');
+    if(obj && obj.ok && obj.close>0){
+      priceEl.value=Number(obj.close).toFixed(2);
+      const pe=$('#priceShow'); pe.textContent=Number(obj.close).toLocaleString('zh-TW',{maximumFractionDigits:2});
+      pe.classList.remove('pulse'); void pe.offsetWidth; pe.classList.add('pulse');
+      asof.textContent=`股價來源：證交所 ${obj.source||''}${obj.date?'（'+fmtDate(obj.date)+'）':''} · 盤後收盤，非即時`;
+      if(parseNum(amountEl.value)>0) compute();
+    } else {
+      asof.textContent='代理有回應但沒拿到價格：'+(obj && obj.error ? obj.error : '未知原因')+'。可手動輸入股價。';
+    }
+  }
+  // 用 JSONP（<script> 載入）取代 fetch，徹底繞過 GAS 跨網域的 CORS 轉址問題
+  function refresh(){
     const btn=$('#refreshBtn'), asof=$('#asof');
     if(GAS_URL.indexOf('exec')===-1){ asof.textContent='尚未設定代理網址（GAS_URL）。可先手動輸入股價。'; return; }
     btn.disabled=true; const old=btn.innerHTML; btn.innerHTML='<span class="dot"></span>更新中…';
-    try{
-      const res=await fetch(GAS_URL);                  // 簡單 GET，不加 header，避免 CORS preflight
-      const obj=await res.json();
-      if(obj && obj.ok && obj.close>0){
-        priceEl.value=Number(obj.close).toFixed(2);
-        const pe=$('#priceShow'); pe.textContent=Number(obj.close).toLocaleString('zh-TW',{maximumFractionDigits:2});
-        pe.classList.remove('pulse'); void pe.offsetWidth; pe.classList.add('pulse');
-        asof.textContent=`股價來源：證交所 ${obj.source||''}${obj.date?'（'+obj.date+'）':''} · 盤後收盤，非即時`;
-        if(parseNum(amountEl.value)>0) compute();      // 金額已填就順手重算
-      } else {
-        asof.textContent='代理有回應但沒拿到價格：'+(obj && obj.error ? obj.error : '未知原因')+'。可手動輸入股價。';
-      }
-    }catch(err){
-      asof.textContent='連不到代理（'+err.message+'）。多半是 GAS 存取權沒設「任何人」。可先手動輸入股價照常使用。';
-    }finally{ btn.disabled=false; btn.innerHTML=old; }
+    const cb='gasCb_'+Date.now(), s=document.createElement('script'); let done=false, timer;
+    function cleanup(){ clearTimeout(timer); try{delete window[cb];}catch(e){window[cb]=undefined;} if(s.parentNode) s.parentNode.removeChild(s); btn.disabled=false; btn.innerHTML=old; }
+    window[cb]=function(obj){ if(done) return; done=true; handlePrice(obj); cleanup(); };
+    s.onerror=function(){ if(done) return; done=true; asof.textContent='載入代理失敗。可先手動輸入股價照常使用。'; cleanup(); };
+    timer=setTimeout(function(){ if(done) return; done=true; asof.textContent='連不到代理（逾時）。請確認 GAS 已部署為「新版本」且程式碼支援 callback。可先手動輸入股價。'; cleanup(); },12000);
+    s.src=GAS_URL+(GAS_URL.indexOf('?')>=0?'&':'?')+'callback='+cb;
+    document.body.appendChild(s);
   }
   $('#refreshBtn').addEventListener('click', refresh);
 
