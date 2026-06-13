@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>0050 金額換股試算</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E8EAED; --surface:#FFFFFF; --ink:#121417; --ink-soft:#54585F;
+    --line:#D7DBE0; --brass:#A47A2E; --up:#D32F3C; --down:#15875A; --warn:#9A6B00;
+    --shadow:0 1px 0 rgba(18,20,23,.04), 0 12px 28px -18px rgba(18,20,23,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper);color:var(--ink)}
+  body{font-family:"Noto Sans TC",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;padding:clamp(16px,4vw,48px) 16px;display:flex;justify-content:center}
+  .num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums lining-nums}
+  .eyebrow{font-family:"Space Grotesk",sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:600;color:var(--ink-soft)}
+  .wrap{width:100%;max-width:520px}
+
+  .ticker{background:var(--ink);color:#F3F4F6;border-radius:18px;padding:22px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .ticker .topline{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .symbol{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:15px;letter-spacing:.04em}
+  .symbol b{color:var(--brass)} .symbol span{color:#9AA0A8;font-weight:500;margin-left:8px;font-size:13px}
+  #refreshBtn{background:transparent;border:1px solid #3A3F47;color:#C9CDD3;font-family:"Space Grotesk",sans-serif;font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer;letter-spacing:.04em;transition:border-color .2s,color .2s;display:inline-flex;align-items:center;gap:6px}
+  #refreshBtn:hover{border-color:var(--brass);color:#fff}
+  #refreshBtn:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+  #refreshBtn[disabled]{opacity:.5;cursor:wait}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--brass);display:inline-block}
+  .price-row{display:flex;align-items:flex-end;gap:16px;margin-top:14px;flex-wrap:wrap}
+  .price-block .lbl,.ret-block .lbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9AA0A8;font-family:"Space Grotesk",sans-serif}
+  .price{font-size:clamp(34px,9vw,46px);font-weight:600;line-height:1;margin-top:6px}
+  .price .cur{font-size:.45em;color:#9AA0A8;margin-right:4px;vertical-align:.18em}
+  .ret-block{margin-left:auto;text-align:right}
+  .ret{font-size:clamp(20px,5vw,26px);font-weight:600;line-height:1;margin-top:6px;color:var(--up)}
+  .asof{font-size:11px;color:#7C828B;margin-top:14px;letter-spacing:.02em}
+  .pulse{animation:pulse .9s ease}
+  @keyframes pulse{0%{color:var(--brass)}100%{}}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-top:14px;box-shadow:var(--shadow)}
+  label.field{display:block}
+  .field .lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .field .lbl .eyebrow{color:var(--ink-soft)}
+  .hint{font-size:11px;color:var(--ink-soft)}
+  .input-shell{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;background:#FBFBFC;transition:border-color .18s}
+  .input-shell:focus-within{border-color:var(--brass)}
+  .input-shell .pre{padding:0 4px 0 14px;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;font-size:16px}
+  .input-shell input{flex:1;border:0;background:transparent;padding:14px 14px 14px 4px;font-family:"IBM Plex Mono",monospace;font-size:20px;font-weight:500;color:var(--ink);width:100%}
+  .input-shell input:focus{outline:none}
+
+  .ret-basis{margin-top:16px}
+  .ret-basis .lbl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-family:"Space Grotesk",sans-serif;margin-bottom:6px;display:block}
+  select#period{width:100%;border:1.5px solid var(--line);border-radius:12px;background:#FBFBFC;padding:12px 14px;font-family:"Noto Sans TC",sans-serif;font-size:15px;color:var(--ink);cursor:pointer}
+  select#period:focus{outline:none;border-color:var(--brass)}
+  .basis-note{font-size:11px;color:var(--ink-soft);margin-top:6px;line-height:1.5}
+  #retWarn{display:none;font-size:12px;color:var(--warn);margin-top:8px;line-height:1.5;background:#FBF4E2;border:1px solid #EBD9A8;border-radius:10px;padding:9px 12px}
+
+  .editable-row{display:flex;gap:12px;margin-top:14px}
+  .editable-row .mini{flex:1}
+  .mini .lbl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-family:"Space Grotesk",sans-serif;margin-bottom:6px;display:block}
+  .mini .input-shell input{font-size:16px;padding:10px 12px}
+  .mini .input-shell .pre{font-size:14px;padding-left:12px}
+  .mini .input-shell .suf{padding:0 12px 0 0;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;font-size:14px}
+
+  #calcBtn{width:100%;margin-top:18px;border:0;cursor:pointer;background:var(--ink);color:#fff;border-radius:12px;padding:15px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;letter-spacing:.08em;transition:transform .08s ease,background .2s}
+  #calcBtn:hover{background:#000} #calcBtn:active{transform:translateY(1px)}
+  #calcBtn:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+  .msg{font-size:13px;color:var(--up);margin-top:10px;min-height:0}
+
+  .results{margin-top:14px;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+  .results.hidden{display:none}
+  .result{background:var(--surface);padding:18px 22px;display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+  .result .meta{max-width:54%}
+  .result .meta .t{font-weight:700;font-size:14px}
+  .result .meta .s{font-size:11px;color:var(--ink-soft);margin-top:2px;line-height:1.4}
+  .result .val{font-size:clamp(22px,6vw,30px);font-weight:600;text-align:right;white-space:nowrap}
+  .result .val .cur{font-size:.5em;color:var(--ink-soft);margin-right:3px}
+  .result .val .unit{font-size:.5em;color:var(--ink-soft);margin-left:4px}
+  .result.primary{background:#FBF7EE}
+  .result.primary .meta .t{color:var(--brass)}
+  .delta{font-size:12px;color:var(--up);font-family:"IBM Plex Mono",monospace;margin-left:8px}
+  .reveal{animation:rise .4s cubic-bezier(.2,.7,.3,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  details{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  summary{cursor:pointer;padding:14px 20px;font-size:13px;font-weight:500;color:var(--ink-soft);list-style:none;display:flex;align-items:center;gap:8px}
+  summary::-webkit-details-marker{display:none}
+  summary .chev{margin-left:auto;transition:transform .2s} details[open] summary .chev{transform:rotate(180deg)}
+  .disc{padding:0 20px 18px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+  .disc b{color:var(--ink)} .disc ol{padding-left:18px;margin-top:6px} .disc li{margin-bottom:6px}
+  footer{text-align:center;font-size:11px;color:var(--ink-soft);margin-top:18px;line-height:1.6}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section class="ticker" aria-label="0050 行情">
+    <div class="topline">
+      <div class="symbol"><b>0050</b><span>元大台灣50</span></div>
+      <button id="refreshBtn" type="button"><span class="dot"></span>更新股價</button>
+    </div>
+    <div class="price-row">
+      <div class="price-block">
+        <div class="lbl">目前股價</div>
+        <div class="price num"><span class="cur">NT$</span><span id="priceShow">—</span></div>
+      </div>
+      <div class="ret-block">
+        <div class="lbl">採用報酬率</div>
+        <div class="ret num" id="retShow">—</div>
+      </div>
+    </div>
+    <div class="asof" id="asof">載入中…</div>
+  </section>
+
+  <section class="panel">
+    <label class="field" for="amount">
+      <span class="lbl"><span class="eyebrow">輸入金額</span><span class="hint">想換成多少 0050？</span></span>
+      <span class="input-shell"><span class="pre">NT$</span>
+        <input id="amount" class="num" type="text" inputmode="decimal" placeholder="100,000" autocomplete="off" /></span>
+    </label>
+
+    <div class="ret-basis">
+      <span class="lbl">報酬率基準（可切換）</span>
+      <select id="period">
+        <option value="cons">長期保守參考（約 10%）</option>
+        <option value="y10">近 10 年（年化 21.29%）</option>
+        <option value="y5">近 5 年（年化 25.53%）</option>
+        <option value="y3">近 3 年（年化 48.53%）</option>
+        <option value="y2">近 2 年（年化 54.36%）</option>
+        <option value="y1">近 1 年（年化 120.13%）</option>
+        <option value="manual">手動自訂</option>
+      </select>
+      <div class="basis-note">歷史數據取自 Yahoo（基準日 2026/06/12，依淨值）。預設用長期保守值推估；其餘期間僅供「若歷史重演」的情境參考。每月可回 Yahoo 更新一次數字。</div>
+      <div id="retWarn"></div>
+    </div>
+
+    <div class="editable-row">
+      <div class="mini">
+        <span class="lbl">股價（自動帶入，可改）</span>
+        <span class="input-shell"><span class="pre">NT$</span>
+          <input id="priceInput" class="num" type="text" inputmode="decimal" autocomplete="off" /></span>
+      </div>
+      <div class="mini">
+        <span class="lbl">年化報酬率</span>
+        <span class="input-shell">
+          <input id="retInput" class="num" type="text" inputmode="decimal" autocomplete="off" />
+          <span class="suf">%</span></span>
+      </div>
+    </div>
+
+    <button id="calcBtn" type="button">計　算</button>
+    <div class="msg" id="msg" role="status"></div>
+  </section>
+
+  <section class="results hidden" id="results" aria-live="polite">
+    <div class="result primary">
+      <div class="meta"><div class="t">等值股數</div><div class="s">以目前股價換算，精確至小數三位</div></div>
+      <div class="val num"><span id="shares">—</span><span class="unit">股</span></div>
+    </div>
+    <div class="result">
+      <div class="meta"><div class="t">3 個月後參考金額</div><div class="s">依採用報酬率複利外推 · 非預測</div></div>
+      <div class="val num"><span class="cur">NT$</span><span id="m3">—</span><span class="delta" id="m3d"></span></div>
+    </div>
+    <div class="result">
+      <div class="meta"><div class="t">1 年後參考金額</div><div class="s">依採用報酬率外推 · 非預測</div></div>
+      <div class="val num"><span class="cur">NT$</span><span id="y1">—</span><span class="delta" id="y1d"></span></div>
+    </div>
+  </section>
+
+  <details>
+    <summary>計算方法與重要限制<span class="chev">▾</span></summary>
+    <div class="disc">
+      <ol>
+        <li><b>等值股數</b>＝ 輸入金額 ÷ 目前股價。顯示到小數三位僅供比例參考，實務上零股最小單位為 1 股。</li>
+        <li><b>3 個月後</b>＝ 金額 ×（1＋年化報酬率）<sup>0.25</sup>；<b>1 年後</b>＝ 金額 ×（1＋年化報酬率）。屬機械式外推。</li>
+        <li><b>這不是預測，也不是投資建議。</b>近年 0050 受台積電與 AI 行情推升，出現異常高報酬（近一年曾達 +120%），<b>幾乎不可能重演</b>。0050 自 2004 年以來年化約 12.8%，長期財務規劃一般建議用 8～10% 估算。預設值刻意採保守。</li>
+        <li><b>股價</b>來自證交所盤後收盤資料（透過你的 Apps Script 代理），每日約 16:00 後更新，非即時盤中價。</li>
+        <li><b>報酬率基準</b>的歷史數字需手動維護：回 Yahoo 個股「績效」頁抄最新值，更新下拉選單對應的數字即可（在程式碼 PRESETS 區）。</li>
+      </ol>
+    </div>
+  </details>
+
+  <footer>僅供個人試算 · 過去績效不代表未來表現 · 投資前請自行評估風險</footer>
+</div>
+
+<script>
+(function(){
+  // ┌─────────────────────────────────────────────────────────────┐
+  // │  ★ 把這裡換成你部署的 Apps Script 網頁應用程式網址（/exec 結尾）★  │
+  // └─────────────────────────────────────────────────────────────┘
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwYS5OAyQj3EVWPtV8rQwgXZDbaICs-xRZOXe6cejUL7eWQQtfmyb-CTTQmv_iQI4ehnQ/exec";
+
+  // 報酬率基準（年化 %）。每月回 Yahoo 個股績效頁更新即可。基準日 2026/06/12。
+  const PRESETS = {
+    cons: 10,        // 長期保守參考（依 0050 長期年化 ~12.8% 與專家建議 8~10% 取保守）
+    y10: 21.29,      // 近 10 年 年化
+    y5: 25.53,       // 近 5 年 年化
+    y3: 48.53,       // 近 3 年 年化
+    y2: 54.36,       // 近 2 年 年化
+    y1: 120.13,      // 近 1 年 年化（AI 多頭異常值）
+    manual: null
+  };
+  const BOOM = ['y1','y2','y3','y5']; // 這些屬多頭推升、外推會高估，要提醒
+
+  const $ = s => document.querySelector(s);
+  const twNum = (n, d=0) => n.toLocaleString('zh-TW',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const parseNum = v => { const n = parseFloat(String(v).replace(/,/g,'').trim()); return isFinite(n)?n:NaN; };
+
+  const amountEl = $('#amount');
+  amountEl.addEventListener('input', e=>{
+    const raw = e.target.value.replace(/[^\d.]/g,'');
+    const parts = raw.split('.');
+    let int = parts[0] ? Number(parts[0]).toLocaleString('en-US') : '';
+    e.target.value = parts.length>1 ? int+'.'+parts[1].slice(0,2) : int;
+  });
+
+  function syncHeaderReturn(){
+    const r=parseNum($('#retInput').value); const el=$('#retShow');
+    if(!isNaN(r)){ el.textContent=(r>=0?'+':'')+r.toFixed(2)+'%'; el.style.color=r>=0?'var(--up)':'var(--down)'; }
+    else { el.textContent='—'; }
+  }
+
+  function applyPeriod(){
+    const k=$('#period').value, warn=$('#retWarn');
+    if(k!=='manual' && PRESETS[k]!=null) $('#retInput').value = PRESETS[k].toFixed(2);
+    if(BOOM.indexOf(k)>=0){
+      warn.textContent='⚠ 這是 AI 多頭推升的歷史數據，幾乎不可能重演；長期規劃建議改回「長期保守參考」。';
+      warn.style.display='block';
+    } else { warn.style.display='none'; }
+    syncHeaderReturn();
+  }
+  $('#period').addEventListener('change', applyPeriod);
+
+  // 手動改數值 → 自動切到「手動自訂」、收起警告
+  $('#retInput').addEventListener('input', ()=>{ $('#period').value='manual'; $('#retWarn').style.display='none'; syncHeaderReturn(); });
+  $('#priceInput').addEventListener('input', ()=>{ const p=parseNum($('#priceInput').value); if(!isNaN(p)) $('#priceShow').textContent=p.toLocaleString('zh-TW',{maximumFractionDigits:2}); });
+
+  function calc(){
+    const amount=parseNum(amountEl.value), price=parseNum($('#priceInput').value), retPct=parseNum($('#retInput').value);
+    const msg=$('#msg');
+    if(isNaN(amount)||amount<=0){ msg.textContent='請輸入大於 0 的金額。'; return; }
+    if(isNaN(price)||price<=0){ msg.textContent='股價尚未帶入或無效，請先更新股價或手動輸入。'; return; }
+    if(isNaN(retPct)){ msg.textContent='年化報酬率需為數字（可為負）。'; return; }
+    msg.textContent='';
+    const r=retPct/100, shares=amount/price, m3=amount*Math.pow(1+r,0.25), y1=amount*(1+r);
+    $('#shares').textContent=twNum(shares,3);
+    $('#m3').textContent=twNum(Math.round(m3));
+    $('#y1').textContent=twNum(Math.round(y1));
+    const d3=m3-amount, d1=y1-amount;
+    const fmtD=d=>(d>=0?'▲ +':'▼ ')+twNum(Math.round(Math.abs(d)));
+    const dEl3=$('#m3d'), dEl1=$('#y1d');
+    dEl3.textContent=fmtD(d3); dEl1.textContent=fmtD(d1);
+    const col=v=>v>=0?'var(--up)':'var(--down)';
+    dEl3.style.color=col(d3); dEl1.style.color=col(d1);
+    const res=$('#results'); res.classList.remove('hidden','reveal'); void res.offsetWidth; res.classList.add('reveal');
+  }
+  $('#calcBtn').addEventListener('click', calc);
+  amountEl.addEventListener('keydown', e=>{ if(e.key==='Enter') calc(); });
+
+  async function refresh(){
+    const btn=$('#refreshBtn'), asof=$('#asof');
+    if(GAS_URL.indexOf('exec')===-1 || GAS_URL.indexOf('貼上')!==-1){
+      asof.textContent='尚未設定代理網址：請把程式碼最上面的 GAS_URL 換成你的 Apps Script 網址。'; return;
+    }
+    btn.disabled=true; const old=btn.innerHTML; btn.innerHTML='<span class="dot"></span>更新中…';
+    try{
+      const res=await fetch(GAS_URL);           // 一般 GET，不加 header，避免 CORS preflight
+      const obj=await res.json();
+      if(obj && obj.ok && obj.close>0){
+        $('#priceInput').value=Number(obj.close).toFixed(2);
+        const pe=$('#priceShow'); pe.textContent=Number(obj.close).toLocaleString('zh-TW',{maximumFractionDigits:2});
+        pe.classList.remove('pulse'); void pe.offsetWidth; pe.classList.add('pulse');
+        asof.textContent=`股價來源：證交所 ${obj.source||''}${obj.date?'（'+obj.date+'）':''} · 盤後收盤，非即時`;
+      } else {
+        asof.textContent='代理有回應但沒拿到價格：'+(obj && obj.error ? obj.error : '未知原因')+'。可手動輸入股價。';
+      }
+    }catch(err){
+      asof.textContent='無法連到代理（'+err.message+'）。請確認 GAS 已部署、存取權設為「任何人」。可先手動輸入股價。';
+    }finally{ btn.disabled=false; btn.innerHTML=old; }
+  }
+  $('#refreshBtn').addEventListener('click', refresh);
+
+  // 初始化：套用預設報酬率（保守）、抓股價
+  applyPeriod();
+  refresh();
+})();
