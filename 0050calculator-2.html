@@ -10,7 +10,7 @@
 <style>
   :root{
     --paper:#E8EAED; --surface:#FFFFFF; --ink:#121417; --ink-soft:#54585F;
-    --line:#D7DBE0; --brass:#A47A2E; --up:#D32F3C; --down:#15875A; --warn:#9A6B00;
+    --line:#D7DBE0; --brass:#A47A2E; --up:#D32F3C; --down:#15875A;
     --shadow:0 1px 0 rgba(18,20,23,.04), 0 12px 28px -18px rgba(18,20,23,.35);
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -18,9 +18,10 @@
   body{font-family:"Noto Sans TC",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;padding:clamp(16px,4vw,48px) 16px;display:flex;justify-content:center}
   .num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums lining-nums}
   .eyebrow{font-family:"Space Grotesk",sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:600;color:var(--ink-soft)}
-  .wrap{width:100%;max-width:540px}
+  .wrap{width:100%;max-width:520px}
 
-  .ticker{background:var(--ink);color:#F3F4F6;border-radius:18px;padding:22px 24px;box-shadow:var(--shadow)}
+  /* ── 行情條 ── */
+  .ticker{background:var(--ink);color:#F3F4F6;border-radius:18px;padding:22px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
   .ticker .topline{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
   .symbol{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:15px;letter-spacing:.04em}
   .symbol b{color:var(--brass)} .symbol span{color:#9AA0A8;font-weight:500;margin-left:8px;font-size:13px}
@@ -33,73 +34,69 @@
   .price-block .lbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9AA0A8;font-family:"Space Grotesk",sans-serif}
   .price{font-size:clamp(34px,9vw,46px);font-weight:600;line-height:1;margin-top:6px}
   .price .cur{font-size:.45em;color:#9AA0A8;margin-right:4px;vertical-align:.18em}
-  .asof{font-size:11px;color:#7C828B;margin-top:14px;letter-spacing:.02em}
   .pulse{animation:pulse .9s ease}
   @keyframes pulse{0%{color:var(--brass)}100%{}}
 
+  /* ── 各期間報酬率 strip ── */
+  .rets{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;margin-top:18px;background:#2A2E35;border:1px solid #2A2E35;border-radius:12px;overflow:hidden}
+  .ret-cell{background:var(--ink);padding:10px 6px;text-align:center}
+  .ret-cell .rl{font-family:"Space Grotesk",sans-serif;font-size:10px;letter-spacing:.04em;color:#8A9098;margin-bottom:5px}
+  .ret-cell .rv{font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;color:#C9CDD3;line-height:1.1}
+  .asof{font-size:11px;color:#7C828B;margin-top:14px;letter-spacing:.02em}
+
+  /* ── 輸入面板 ── */
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-top:14px;box-shadow:var(--shadow)}
   label.field{display:block}
   .field .lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .field .lbl .eyebrow{color:var(--ink-soft)}
   .hint{font-size:11px;color:var(--ink-soft)}
   .input-shell{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;background:#FBFBFC;transition:border-color .18s}
   .input-shell:focus-within{border-color:var(--brass)}
   .input-shell .pre{padding:0 4px 0 14px;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;font-size:16px}
   .input-shell input{flex:1;border:0;background:transparent;padding:14px 14px 14px 4px;font-family:"IBM Plex Mono",monospace;font-size:20px;font-weight:500;color:var(--ink);width:100%}
   .input-shell input:focus{outline:none}
-  .input-shell .suf{padding:0 14px 0 0;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;font-size:15px}
-
-  .editable-row{display:flex;gap:12px;margin-top:14px}
-  .editable-row .mini{flex:1}
-  .mini .lbl,.field .lbl .eyebrow{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-family:"Space Grotesk",sans-serif}
-  .mini .lbl{margin-bottom:6px;display:block}
-  .mini .input-shell input{font-size:16px;padding:10px 12px}
-  .mini .input-shell .pre{font-size:14px;padding-left:12px}
-  .mini .input-shell .suf{font-size:13px}
-
   #calcBtn{width:100%;margin-top:18px;border:0;cursor:pointer;background:var(--ink);color:#fff;border-radius:12px;padding:15px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;letter-spacing:.08em;transition:transform .08s ease,background .2s}
   #calcBtn:hover{background:#000} #calcBtn:active{transform:translateY(1px)}
   #calcBtn:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
   .msg{font-size:13px;color:var(--up);margin-top:10px;min-height:0}
 
-  .results{margin-top:14px}
+  /* ── 手動校正（摺疊） ── */
+  .manual{margin-top:16px;border:1px dashed var(--line);border-radius:12px;overflow:hidden}
+  .manual summary{cursor:pointer;padding:12px 16px;font-size:12.5px;font-weight:500;color:var(--ink-soft);list-style:none;display:flex;align-items:center;gap:8px}
+  .manual summary::-webkit-details-marker{display:none}
+  .manual summary .chev{margin-left:auto;transition:transform .2s}
+  .manual[open] summary .chev{transform:rotate(180deg)}
+  .manual-body{padding:4px 16px 16px}
+  .mini{margin-bottom:12px}
+  .mini .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);font-family:"Space Grotesk",sans-serif;margin-bottom:6px;display:block}
+  .mini .input-shell input{font-size:15px;padding:10px 12px}
+  .mini .input-shell .pre{font-size:14px;padding-left:12px}
+  .mini .input-shell .suf{padding:0 12px 0 0;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;font-size:14px}
+  .ret-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .ret-grid .mini{margin-bottom:0}
+
+  /* ── 試算結果 ── */
+  .results{margin-top:14px;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden}
   .results.hidden{display:none}
-  .shares-box{background:#FBF7EE;border:1px solid var(--line);border-radius:18px;padding:18px 22px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;box-shadow:var(--shadow)}
-  .shares-box .t{font-weight:700;font-size:14px;color:var(--brass)}
-  .shares-box .s{font-size:11px;color:var(--ink-soft);margin-top:2px}
-  .shares-box .v{font-size:clamp(24px,7vw,32px);font-weight:600;text-align:right;white-space:nowrap}
-  .shares-box .v .unit{font-size:.5em;color:var(--ink-soft);margin-left:4px}
-
-  .grid-title{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);font-family:"Space Grotesk",sans-serif;margin:18px 0 8px 2px}
-  .scen{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-  .cell{background:var(--surface);padding:14px 15px}
-  .cell.rec{background:#FBF7EE}
-  .cell .h{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700}
-  .badge{font-size:9px;background:var(--brass);color:#fff;border-radius:999px;padding:1px 6px;letter-spacing:.05em;font-weight:600}
-  .flag{font-size:11px;color:var(--warn)}
-  .cell .pct{font-size:11px;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;margin-top:1px}
-  .cell .line{display:flex;align-items:baseline;justify-content:space-between;gap:6px;margin-top:9px}
-  .cell .k{font-size:10px;letter-spacing:.08em;color:var(--ink-soft);font-family:"Space Grotesk",sans-serif}
-  .cell .v{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:17px}
-  .cell .v.small{font-size:13px;color:var(--ink-soft);font-weight:500}
-
-  .manual-card{margin-top:1px;background:var(--surface);border:1px solid var(--line);border-radius:0 0 18px 18px;border-top:0;padding:14px 16px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-  .manual-card.hidden{display:none}
-  .manual-card .h{font-size:13px;font-weight:700}
-  .manual-card .nums{display:flex;gap:16px}
-  .manual-card .nums div{text-align:right}
-  .manual-card .k{font-size:10px;color:var(--ink-soft);font-family:"Space Grotesk",sans-serif}
-  .manual-card .v{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:15px}
-
-  .gridnote{font-size:11px;color:var(--ink-soft);margin-top:8px;line-height:1.5;padding:0 2px}
+  .result{background:var(--surface);padding:16px 22px;display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+  .result .meta{max-width:46%}
+  .result .meta .t{font-weight:700;font-size:14px}
+  .result .meta .s{font-size:11px;color:var(--ink-soft);margin-top:2px;line-height:1.4}
+  .result .val{font-size:clamp(20px,5.5vw,27px);font-weight:600;text-align:right;white-space:nowrap}
+  .result .val .cur{font-size:.5em;color:var(--ink-soft);margin-right:3px}
+  .result.primary{background:#FBF7EE}
+  .result.primary .meta .t{color:var(--brass)}
+  .delta{display:block;font-size:12px;font-family:"IBM Plex Mono",monospace;margin-top:2px;font-weight:500}
   .reveal{animation:rise .4s cubic-bezier(.2,.7,.3,1) both}
   @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-  details{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-  summary{cursor:pointer;padding:14px 20px;font-size:13px;font-weight:500;color:var(--ink-soft);list-style:none;display:flex;align-items:center;gap:8px}
-  summary::-webkit-details-marker{display:none}
-  summary .chev{margin-left:auto;transition:transform .2s} details[open] summary .chev{transform:rotate(180deg)}
+  details.disc-wrap{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  details.disc-wrap > summary{cursor:pointer;padding:14px 20px;font-size:13px;font-weight:500;color:var(--ink-soft);list-style:none;display:flex;align-items:center;gap:8px}
+  details.disc-wrap > summary::-webkit-details-marker{display:none}
+  details.disc-wrap > summary .chev{margin-left:auto;transition:transform .2s}
+  details.disc-wrap[open] > summary .chev{transform:rotate(180deg)}
   .disc{padding:0 20px 18px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
-  .disc b{color:var(--ink)} .disc ol{padding-left:18px;margin-top:6px} .disc li{margin-bottom:6px}
+  .disc b{color:var(--ink)} .disc ol{padding-left:18px;margin-top:6px} .disc li{margin-bottom:7px}
   footer{text-align:center;font-size:11px;color:var(--ink-soft);margin-top:18px;line-height:1.6}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -107,72 +104,57 @@
 <body>
 <div class="wrap">
 
-  <section class="ticker" aria-label="0050 行情">
+  <section class="ticker" aria-label="0050 即時行情">
     <div class="topline">
       <div class="symbol"><b>0050</b><span>元大台灣50</span></div>
-      <button id="refreshBtn" type="button"><span class="dot"></span>更新股價</button>
+      <button id="refreshBtn" type="button"><span class="dot"></span>更新行情</button>
     </div>
     <div class="price-row">
       <div class="price-block">
-        <div class="lbl">目前股價</div>
+        <div class="lbl">最新股價</div>
         <div class="price num"><span class="cur">NT$</span><span id="priceShow">—</span></div>
       </div>
     </div>
+    <div class="rets" id="retStrip" aria-label="各期間含息報酬率"></div>
     <div class="asof" id="asof">載入中…</div>
   </section>
 
   <section class="panel">
     <label class="field" for="amount">
-      <span class="lbl"><span class="eyebrow">輸入金額</span><span class="hint">想換成多少 0050？</span></span>
+      <span class="lbl"><span class="eyebrow">輸入金額</span><span class="hint">想投入多少買 0050？</span></span>
       <span class="input-shell"><span class="pre">NT$</span>
         <input id="amount" class="num" type="text" inputmode="decimal" placeholder="100,000" autocomplete="off" /></span>
     </label>
 
-    <div class="editable-row">
-      <div class="mini">
-        <span class="lbl">股價（自動帶入，可改）</span>
-        <span class="input-shell"><span class="pre">NT$</span>
-          <input id="priceInput" class="num" type="text" inputmode="decimal" autocomplete="off" /></span>
-      </div>
-      <div class="mini">
-        <span class="lbl">手動報酬率（選填）</span>
-        <span class="input-shell">
-          <input id="manualRet" class="num" type="text" inputmode="decimal" placeholder="—" autocomplete="off" />
-          <span class="suf">%</span></span>
-      </div>
-    </div>
-
-    <button id="calcBtn" type="button">計　算</button>
+    <button id="calcBtn" type="button">試　算</button>
     <div class="msg" id="msg" role="status"></div>
-  </section>
 
-  <section class="results hidden" id="results" aria-live="polite">
-    <div class="shares-box">
-      <div><div class="t">等值股數</div><div class="s" id="sharesSub">—</div></div>
-      <div class="v num"><span id="shares">—</span><span class="unit">股</span></div>
-    </div>
-
-    <div class="grid-title">六種報酬率基準下的推估金額</div>
-    <div class="scen" id="scen"></div>
-    <div class="manual-card hidden" id="manualCard">
-      <div class="h" id="manualH">手動 —%</div>
-      <div class="nums">
-        <div><div class="k">3 個月後</div><div class="v">NT$ <span id="mManual3">—</span></div></div>
-        <div><div class="k">1 年後</div><div class="v">NT$ <span id="mManual1">—</span></div></div>
+    <details class="manual" id="manualBox">
+      <summary>手動校正股價與報酬率<span class="chev">▾</span></summary>
+      <div class="manual-body">
+        <div class="mini">
+          <span class="lbl">股價（自動帶入，可改）</span>
+          <span class="input-shell"><span class="pre">NT$</span>
+            <input id="priceInput" class="num" type="text" inputmode="decimal" autocomplete="off" /></span>
+        </div>
+        <div class="ret-grid" id="retInputs"></div>
+        <p class="hint" style="margin-top:10px">報酬率欄位由代理自動帶入；若空白或想用券商數字，可直接覆寫。單位為 % ，可填負值。</p>
       </div>
-    </div>
-    <div class="gridnote">金額單位：新台幣元。標 <span class="flag">⚠</span> 者為近年 AI 多頭推升的歷史年化，外推會高估，僅供「若歷史重演」情境參考；<span class="badge">建議</span> 為長期保守值。</div>
+    </details>
   </section>
 
-  <details>
+  <section class="results hidden" id="results" aria-live="polite"></section>
+
+  <details class="disc-wrap">
     <summary>計算方法與重要限制<span class="chev">▾</span></summary>
     <div class="disc">
       <ol>
-        <li><b>等值股數</b>＝ 輸入金額 ÷ 目前股價。顯示到小數三位僅供比例參考，實務上零股最小單位為 1 股。</li>
-        <li><b>3 個月後</b>＝ 金額 ×（1＋年化報酬率）<sup>0.25</sup>；<b>1 年後</b>＝ 金額 ×（1＋年化報酬率）。屬機械式外推。</li>
-        <li><b>這不是預測，也不是投資建議。</b>近年 0050 受台積電與 AI 行情推升出現異常高報酬（近一年曾達 +120%），<b>幾乎不可能重演</b>。0050 自 2004 年以來年化約 12.8%，長期規劃一般建議用 8～10% 估算。</li>
-        <li><b>股價</b>來自證交所盤後收盤（透過你的 Apps Script 代理），每日約 16:00 後更新，非即時。抓不到時可在上方手動輸入。</li>
-        <li><b>六格報酬率</b>的歷史數字需手動維護：回 Yahoo 個股「績效」頁抄最新值，改程式碼最上面的 SCENARIOS 即可。</li>
+        <li><b>各期間報酬率＝「含息還原報酬率」（Total Return）。</b>已自動還原 2025/6/18 的「1 拆 4」分割與配息，因此 3 年、5 年期間不會因分割而失真。</li>
+        <li><b>這些是「累積報酬」，不是年化。</b>例如「5年 +120%」代表過去五年總共漲 120%，不是每年 120%。各欄位彼此不可相加。</li>
+        <li><b>試算金額</b>＝輸入金額 ×（1＋該期間報酬率）。意義是「<b>假設未來這段期間，重演過去同一段期間的績效</b>」，屬機械式示意。</li>
+        <li><b>這不是預測，也不是投資建議。</b>過去績效不代表未來；市場可能漲、跌或盤整，實際結果可能與試算差距極大。</li>
+        <li><b>股價</b>為 Yahoo Finance 報價（一般約 15 分鐘延遲），非即時撮合價；盤中為當下參考價，盤後為當日收盤。</li>
+        <li><b>資料來源</b>：Yahoo Finance（0050.TW）經你的 Apps Script 代理計算。建議與券商 App 的「績效」頁對照一次；若差異明顯，以券商為準。</li>
       </ol>
     </div>
   </details>
@@ -182,104 +164,142 @@
 
 <script>
 (function(){
-  // ┌─────────────────────────────────────────────────────────────┐
-  // │  ★ 你的 Apps Script 網頁應用程式網址（/exec 結尾）★              │
-  // └─────────────────────────────────────────────────────────────┘
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwYS5OAyQj3EVWPtV8rQwgXZDbaICs-xRZOXe6cejUL7eWQQtfmyb-CTTQmv_iQI4ehnQ/exec";;
+  // ┌─────────────────────────────────────────────────────────────────┐
+  // │  ★ 換成你部署的「升級版」Apps Script 網址（/exec 結尾）★            │
+  // │    舊版代理（只回傳收盤價）也能用，只是報酬率需手動輸入。           │
+  // └─────────────────────────────────────────────────────────────────┘
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwYS5OAyQj3EVWPtV8rQwgXZDbaICs-xRZOXe6cejUL7eWQQtfmyb-CTTQmv_iQI4ehnQ/exec";
 
-  // 六種報酬率基準（年化 %）。每月回 Yahoo 個股績效頁更新即可。基準日 2026/06/12。
-  // boom=true 會標 ⚠（多頭推升、外推高估）；rec=true 會標「建議」。
-  const SCENARIOS = [
-    {label:'長期保守', pct:10,     rec:true },
-    {label:'近 10 年', pct:21.29,  boom:true},
-    {label:'近 5 年',  pct:25.53,  boom:true},
-    {label:'近 3 年',  pct:48.53,  boom:true},
-    {label:'近 2 年',  pct:54.36,  boom:true},
-    {label:'近 1 年',  pct:120.13, boom:true}
+  // 期間定義（key 需與 Apps Script 回傳的 returns 物件對應）
+  const PERIODS = [
+    {key:'m1', label:'1個月', s:'過去一個月'},
+    {key:'m3', label:'3個月', s:'過去三個月'},
+    {key:'m6', label:'6個月', s:'過去半年'},
+    {key:'y1', label:'1年',  s:'過去一年',  primary:true},
+    {key:'y3', label:'3年',  s:'過去三年累積'},
+    {key:'y5', label:'5年',  s:'過去五年累積'},
   ];
 
   const $ = s => document.querySelector(s);
   const twNum = (n, d=0) => n.toLocaleString('zh-TW',{minimumFractionDigits:d,maximumFractionDigits:d});
   const parseNum = v => { const n = parseFloat(String(v).replace(/,/g,'').trim()); return isFinite(n)?n:NaN; };
+  const colorFor = v => v>=0 ? 'var(--up)' : 'var(--down)';
+  const pct = v => (v>=0?'+':'')+v.toFixed(2)+'%';
 
-  const amountEl=$('#amount'), priceEl=$('#priceInput'), manualEl=$('#manualRet'), msg=$('#msg');
-
-  amountEl.addEventListener('input', e=>{
-    const raw=e.target.value.replace(/[^\d.]/g,''); const parts=raw.split('.');
-    let int=parts[0]?Number(parts[0]).toLocaleString('en-US'):'';
-    e.target.value=parts.length>1?int+'.'+parts[1].slice(0,2):int;
+  // ── 動態建立：行情條報酬 strip ──
+  const stripEl = $('#retStrip');
+  PERIODS.forEach(p=>{
+    const cell=document.createElement('div'); cell.className='ret-cell';
+    cell.innerHTML = `<div class="rl">${p.label}</div><div class="rv" id="rv_${p.key}">—</div>`;
+    stripEl.appendChild(cell);
   });
-  priceEl.addEventListener('input', ()=>{ const p=parseNum(priceEl.value); if(!isNaN(p)) $('#priceShow').textContent=p.toLocaleString('zh-TW',{maximumFractionDigits:2}); });
 
-  function compute(){
-    const amount=parseNum(amountEl.value), price=parseNum(priceEl.value);
-    if(isNaN(amount)||amount<=0){ msg.textContent='請輸入大於 0 的金額。'; amountEl.focus(); return; }
-    if(isNaN(price)||price<=0){ msg.textContent='還沒有股價：請按「更新股價」，或直接在股價欄手動輸入。'; priceEl.focus(); return; }
+  // ── 動態建立：手動報酬輸入欄 ──
+  const retInputsEl = $('#retInputs');
+  PERIODS.forEach(p=>{
+    const m=document.createElement('div'); m.className='mini';
+    m.innerHTML = `<span class="lbl">${p.label}報酬率</span>
+      <span class="input-shell">
+        <input id="ri_${p.key}" class="num" type="text" inputmode="decimal" placeholder="自動" autocomplete="off" />
+        <span class="suf">%</span></span>`;
+    retInputsEl.appendChild(m);
+  });
+
+  // 手動欄位 ↔ 行情條同步
+  PERIODS.forEach(p=>{
+    $('#ri_'+p.key).addEventListener('input', ()=>{
+      const v=parseNum($('#ri_'+p.key).value); const rv=$('#rv_'+p.key);
+      if(!isNaN(v)){ rv.textContent=pct(v); rv.style.color=colorFor(v); }
+      else { rv.textContent='—'; rv.style.color='#C9CDD3'; }
+    });
+  });
+  $('#priceInput').addEventListener('input',()=>{ const x=parseNum($('#priceInput').value); if(!isNaN(x)) $('#priceShow').textContent=x.toLocaleString('zh-TW',{maximumFractionDigits:2}); });
+
+  // 金額千分位
+  const amountEl = $('#amount');
+  amountEl.addEventListener('input', e=>{
+    const raw = e.target.value.replace(/[^\d.]/g,'');
+    const parts = raw.split('.');
+    let int = parts[0] ? Number(parts[0]).toLocaleString('en-US') : '';
+    e.target.value = parts.length>1 ? int+'.'+parts[1].slice(0,2) : int;
+  });
+
+  // ── 試算 ──
+  function calc(){
+    const amount = parseNum(amountEl.value);
+    const msg = $('#msg');
+    if(isNaN(amount) || amount<=0){ msg.textContent='請輸入大於 0 的金額。'; return; }
+
+    const rows=[];
+    PERIODS.forEach(p=>{
+      const r = parseNum($('#ri_'+p.key).value);
+      rows.push({p, r:isNaN(r)?null:r});
+    });
+    if(rows.every(x=>x.r===null)){ msg.textContent='尚無報酬率資料：請先「更新行情」或在下方手動輸入。'; return; }
     msg.textContent='';
 
-    const shares=amount/price;
-    $('#shares').textContent=twNum(shares,3);
-    $('#sharesSub').textContent='以 NT$'+twNum(price,2)+' 換算';
+    const res=$('#results'); res.innerHTML='';
+    rows.forEach(({p,r})=>{
+      const div=document.createElement('div'); div.className='result'+(p.primary?' primary':'');
+      if(r===null){
+        div.innerHTML=`<div class="meta"><div class="t">${p.label}後參考金額</div><div class="s">${p.s} · 無資料</div></div>
+          <div class="val num"><span style="color:var(--ink-soft);font-size:.7em">—</span></div>`;
+      }else{
+        const fv=amount*(1+r/100), pl=fv-amount;
+        div.innerHTML=`<div class="meta"><div class="t">${p.label}後參考金額</div><div class="s">${p.s} · 報酬率 ${pct(r)}</div></div>
+          <div class="val num"><span class="cur">NT$</span>${twNum(Math.round(fv))}
+            <span class="delta" style="color:${colorFor(pl)}">${pl>=0?'▲ +':'▼ '}${twNum(Math.round(Math.abs(pl)))}</span></div>`;
+      }
+      res.appendChild(div);
+    });
+    res.classList.remove('hidden','reveal'); void res.offsetWidth; res.classList.add('reveal');
+  }
+  $('#calcBtn').addEventListener('click', calc);
+  amountEl.addEventListener('keydown', e=>{ if(e.key==='Enter') calc(); });
 
-    const cells = SCENARIOS.map(s=>{
-      const r=s.pct/100, m3=amount*Math.pow(1+r,0.25), y1=amount*(1+r);
-      const tag = s.rec?'<span class="badge">建議</span>':(s.boom?'<span class="flag">⚠</span>':'');
-      return `<div class="cell${s.rec?' rec':''}">
-        <div class="h">${s.label} ${tag}</div>
-        <div class="pct">年化 ${s.pct.toFixed(2)}%</div>
-        <div class="line"><span class="k">1 年後</span><span class="v">${twNum(Math.round(y1))}</span></div>
-        <div class="line"><span class="k">3 個月後</span><span class="v small">${twNum(Math.round(m3))}</span></div>
-      </div>`;
-    }).join('');
-    $('#scen').innerHTML = cells;
-
-    // 手動（選填）：只有填了才算、才顯示，放在最後
-    const mr=parseNum(manualEl.value), card=$('#manualCard');
-    if(!isNaN(mr)){
-      const r=mr/100;
-      $('#manualH').textContent='手動 '+mr.toFixed(2)+'%';
-      $('#mManual3').textContent=twNum(Math.round(amount*Math.pow(1+r,0.25)));
-      $('#mManual1').textContent=twNum(Math.round(amount*(1+r)));
-      card.classList.remove('hidden');
-    } else { card.classList.add('hidden'); }
-
-    const res=$('#results'); res.classList.remove('hidden','reveal'); void res.offsetWidth; res.classList.add('reveal');
+  // ── 抓行情 ──
+  function fillReturn(key, v){
+    if(v===null||v===undefined||isNaN(v)) return;
+    $('#ri_'+key).value = Number(v).toFixed(2);
+    const rv=$('#rv_'+key); rv.textContent=pct(v); rv.style.color=colorFor(v);
   }
 
-  $('#calcBtn').addEventListener('click', compute);
-  [amountEl, priceEl, manualEl].forEach(el=> el.addEventListener('keydown', e=>{ if(e.key==='Enter') compute(); }));
-
-  function fmtDate(d){
-    d=String(d||'');
-    if(/^\d{7}$/.test(d)) return (parseInt(d.slice(0,3),10)+1911)+'/'+d.slice(3,5)+'/'+d.slice(5,7); // 民國轉西元
-    return d;
-  }
-  function handlePrice(obj){
-    const asof=$('#asof');
-    if(obj && obj.ok && obj.close>0){
-      priceEl.value=Number(obj.close).toFixed(2);
-      const pe=$('#priceShow'); pe.textContent=Number(obj.close).toLocaleString('zh-TW',{maximumFractionDigits:2});
-      pe.classList.remove('pulse'); void pe.offsetWidth; pe.classList.add('pulse');
-      asof.textContent=`股價來源：證交所 ${obj.source||''}${obj.date?'（'+fmtDate(obj.date)+'）':''} · 盤後收盤，非即時`;
-      if(parseNum(amountEl.value)>0) compute();
-    } else {
-      asof.textContent='代理有回應但沒拿到價格：'+(obj && obj.error ? obj.error : '未知原因')+'。可手動輸入股價。';
-    }
-  }
-  // 用 JSONP（<script> 載入）取代 fetch，徹底繞過 GAS 跨網域的 CORS 轉址問題
-  function refresh(){
+  async function refresh(){
     const btn=$('#refreshBtn'), asof=$('#asof');
-    if(GAS_URL.indexOf('exec')===-1){ asof.textContent='尚未設定代理網址（GAS_URL）。可先手動輸入股價。'; return; }
+    if(GAS_URL.indexOf('exec')===-1){
+      asof.textContent='尚未設定代理網址：請把程式碼最上面的 GAS_URL 換成你的 Apps Script 網址。';
+      return;
+    }
     btn.disabled=true; const old=btn.innerHTML; btn.innerHTML='<span class="dot"></span>更新中…';
-    const cb='gasCb_'+Date.now(), s=document.createElement('script'); let done=false, timer;
-    function cleanup(){ clearTimeout(timer); try{delete window[cb];}catch(e){window[cb]=undefined;} if(s.parentNode) s.parentNode.removeChild(s); btn.disabled=false; btn.innerHTML=old; }
-    window[cb]=function(obj){ if(done) return; done=true; handlePrice(obj); cleanup(); };
-    s.onerror=function(){ if(done) return; done=true; asof.textContent='載入代理失敗。可先手動輸入股價照常使用。'; cleanup(); };
-    timer=setTimeout(function(){ if(done) return; done=true; asof.textContent='連不到代理（逾時）。請確認 GAS 已部署為「新版本」且程式碼支援 callback。可先手動輸入股價。'; cleanup(); },12000);
-    s.src=GAS_URL+(GAS_URL.indexOf('?')>=0?'&':'?')+'callback='+cb;
-    document.body.appendChild(s);
+    try{
+      const res = await fetch(GAS_URL);                 // 純 GET，不加 header，避免 CORS preflight
+      const obj = await res.json();
+      const price = obj.price ?? obj.close;             // 新版用 price，舊版用 close
+      if(obj && obj.ok && price>0){
+        $('#priceInput').value = Number(price).toFixed(2);
+        const pe=$('#priceShow'); pe.textContent=Number(price).toLocaleString('zh-TW',{maximumFractionDigits:2});
+        pe.classList.remove('pulse'); void pe.offsetWidth; pe.classList.add('pulse');
+
+        if(obj.returns){
+          PERIODS.forEach(p=> fillReturn(p.key, obj.returns[p.key]));
+          asof.textContent = `含息還原報酬 · 來源 ${obj.source||'Yahoo Finance'}${obj.marketTime?'（'+obj.marketTime+'）':(obj.date?'（'+obj.date+'）':'')}`;
+        } else {
+          asof.textContent = `已取得股價，但此代理未提供各期間報酬 → 請部署升級版代理，或手動輸入報酬率。`;
+          $('#manualBox').open = true;
+        }
+      } else {
+        asof.textContent = '代理有回應但沒拿到資料：'+(obj && obj.error ? obj.error : '未知原因')+'。可手動輸入。';
+        $('#manualBox').open = true;
+      }
+    }catch(err){
+      asof.textContent = '無法連到代理（'+err.message+'）。請確認 Apps Script 已部署、存取權設為「任何人」。可先手動輸入。';
+      $('#manualBox').open = true;
+    }finally{ btn.disabled=false; btn.innerHTML=old; }
   }
   $('#refreshBtn').addEventListener('click', refresh);
 
   refresh();
 })();
+</script>
+</body>
+</html>
